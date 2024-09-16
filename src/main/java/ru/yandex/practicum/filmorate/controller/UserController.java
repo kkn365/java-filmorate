@@ -2,14 +2,11 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,15 +17,21 @@ import java.util.Map;
 public class UserController {
 
     private final Map<Long, User> users = new HashMap<>();
+    private long userIdGenerator = 0;
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("The list of users has been sent.");
+        log.info("Пришел GET-запрос /users");
+
+        log.info("Отправлен ответ на GET-запрос /users");
+
         return users.values();
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User newUser) {
+
+        log.info("Пришел POST-запрос /users с телом: {}", newUser);
 
         final Long id = getNextId();
 
@@ -42,79 +45,47 @@ public class UserController {
 
         users.put(id, user);
 
-        log.info("User has been added to the list: {}", user);
+        log.info("Отправлен ответ на POST-запрос /users с телом: {}", user);
 
         return user;
 
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
 
-        try {
-            return new ResponseEntity<>(update(user), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            log.error("Not found error: {}", e.getMessage());
-            return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (ValidationException e) {
-            log.error("Validation error: {}", e.getMessage());
-            return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private User update(User user) throws ValidationException, NotFoundException {
+        log.info("Пришел PUT-запрос /users с телом: {}", user);
 
         final Long id = user.getId();
 
         if (id == null) {
-            throw new ValidationException("Id must be set");
+            log.error("Не указан id пользователя.");
+            throw new ValidationException("Должен быть указан id пользователя.");
         }
 
-        User oldUser = users.get(id);
-
-        if (oldUser == null) {
-            throw new NotFoundException("User with id = " + id + " not found");
+        if (!users.containsKey(id)) {
+            log.error("Не найден пользователь с id={}", id);
+            throw new NotFoundException("Пользователь с id=" + id + " не найден.");
         }
 
-        final String oldEmail = oldUser.getEmail();
-        final String newEmail = user.getEmail();
-        if (!oldEmail.equals(newEmail)) {
-            oldUser.setEmail(newEmail);
-            log.info("User id={} field 'email' updated. Old value: [{}]. New value: [{}]", id, oldEmail, newEmail);
-        }
+        User newUser = User.builder()
+                .id(id)
+                .email(user.getEmail())
+                .login(user.getLogin())
+                .name(user.getName() == null ? user.getLogin() : user.getName())
+                .birthday(user.getBirthday())
+                .build();
 
-        final String oldLogin = oldUser.getLogin();
-        final String newLogin = user.getLogin();
-        if (!oldLogin.equals(newLogin)) {
-            oldUser.setLogin(newLogin);
-            log.info("User id={} field 'login' updated. Old value: [{}]. New value: [{}]", id, oldLogin, newLogin);
-        }
+        users.put(id, newUser);
 
-        final String oldName = oldUser.getName();
-        final String newName = user.getName() == null ? user.getLogin() : user.getName();
-        if (!oldName.equals(newName)) {
-            oldUser.setName(newName);
-            log.info("User id={} field 'name' updated. Old value: [{}]. New value: [{}]", id, oldName, newName);
-        }
+        log.info("Отправлен ответ на PUT-запрос /users с телом: {}", newUser);
 
-        final LocalDate oldBirthday = oldUser.getBirthday();
-        final LocalDate newBirthday = user.getBirthday();
-        if (!oldBirthday.equals(newBirthday)) {
-            oldUser.setBirthday(newBirthday);
-            log.info("User id={} field 'birthday' updated. Old value: [{}]. New value: [{}]",
-                    id, oldBirthday, newBirthday);
-        }
+        return newUser;
 
-        return oldUser;
     }
 
     private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++userIdGenerator;
     }
 
 }

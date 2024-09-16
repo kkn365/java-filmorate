@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.exception.*;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,15 +18,22 @@ import java.util.Map;
 public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
+    private long filmIdGenerator = 0;
 
     @GetMapping
     public Collection<Film> findAll() {
-        log.info("The list of films has been sent.");
+
+        log.info("Пришел GET-запрос /films");
+
+        log.info("Отправлен ответ на GET-запрос /films");
+
         return films.values();
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film newFilm) {
+
+        log.info("Пришел POST-запрос /films с телом: {}", newFilm);
 
         Film film = Film.builder()
                     .id(getNextId())
@@ -39,78 +44,39 @@ public class FilmController {
                     .build();
 
         films.put(film.getId(), film);
-        log.info("The film has been added to the list: {}", film);
+
+        log.info("Отправлен ответ на POST-запрос /films с телом: {}", film);
+
         return film;
     }
 
     @PutMapping
-    public ResponseEntity<?> updateFilm(@Valid @RequestBody Film film) {
-        try {
-            return new ResponseEntity<>(update(film), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            log.error("Not found error: {}", e.getMessage());
-            return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (ValidationException e) {
-            log.error("Validation error: {}", e.getMessage());
-            return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    public Film updateFilm(@Valid @RequestBody Film film) {
 
-    private Film update(Film film) throws ValidationException, NotFoundException {
+        log.info("Пришел PUT-запрос /films с телом: {}", film);
 
         final Long id = film.getId();
 
         if (id == null) {
-            throw new ValidationException("Id must be set");
+            log.error("Не указан id фильма.");
+            throw new ValidationException("Должен быть указан id фильма.");
         }
 
-        Film oldFilm = films.get(id);
-
-        if (oldFilm == null) {
-            throw new NotFoundException("Film with id = " + film.getId() + " not found");
+        if (!films.containsKey(id)) {
+            log.error("Не найден фильм с id={}", id);
+            throw new NotFoundException("Фильм с id=" + id + " не найден.");
         }
 
-        final String oldName = oldFilm.getName();
-        final String newName = film.getName();
-        if (!oldName.equals(newName)) {
-            oldFilm.setName(newName);
-            log.info("Film id={} field 'name' updated. Old value: [{}]. New value: [{}]", id, oldName, newName);
-        }
+        films.put(id, film);
 
-        final String oldDescription = oldFilm.getDescription();
-        final String newDescription = film.getDescription();
-        if (!oldDescription.equals(newDescription)) {
-            oldFilm.setDescription(newDescription);
-            log.info("Film id={} field 'description' updated. Old value: [{}]. New value: [{}]",
-                    id, oldDescription, newDescription);
-        }
+        log.info("Отправлен ответ на PUT-запрос /films с телом: {}", film);
 
-        final LocalDate oldReleaseDate = oldFilm.getReleaseDate();
-        final LocalDate newReleaseDate = film.getReleaseDate();
-        if (!oldReleaseDate.equals(newReleaseDate)) {
-            oldFilm.setReleaseDate(newReleaseDate);
-            log.info("Film id={} field 'releaseDate' updated. Old value: [{}]. New value: [{}]",
-                    id, oldReleaseDate, newReleaseDate);
-        }
+        return film;
 
-        final Integer oldDuration = oldFilm.getDuration();
-        final Integer newDuration = film.getDuration();
-        if (!oldDuration.equals(newDuration)) {
-            oldFilm.setDuration(newDuration);
-            log.info("Film id={} field 'duration' updated. Old value: [{}]. New value: [{}]",
-                    id, oldDuration, newDuration);
-        }
-
-        return oldFilm;
     }
 
     private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++filmIdGenerator;
     }
 
 }
