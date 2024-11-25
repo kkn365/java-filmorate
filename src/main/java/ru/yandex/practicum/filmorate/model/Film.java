@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.MinimumFilmReleaseDate;
+
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,5 +27,7 @@ public class Film {
 
     @Positive
     private Integer duration;
+
+    private Set<Long> liked;
 
 }

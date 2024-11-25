@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.annotation;
 
-import ru.yandex.practicum.filmorate.validator.MinimumDateValidator;
-
 import jakarta.validation.Constraint;
 import jakarta.validation.constraints.Past;
+import ru.yandex.practicum.filmorate.validator.MinimumDateValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,8 +18,11 @@ import static ru.yandex.practicum.filmorate.utility.Constants.MIN_RELEASE_DATE;
 public @interface MinimumFilmReleaseDate {
 
     String message() default "The release date of the film cannot be earlier {value}";
+
     Class<?>[] groups() default {};
+
     Class<?>[] payload() default {};
+
     String value() default MIN_RELEASE_DATE;
 
 }
