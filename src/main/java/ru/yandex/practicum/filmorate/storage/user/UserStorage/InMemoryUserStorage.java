@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 @Component
@@ -13,7 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Long userIdGenerator = 0L;
 
     private Long getNextId() {
-        return userIdGenerator++;
+        return ++userIdGenerator;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .login(user.getLogin())
                 .name(user.getName() == null ? user.getLogin() : user.getName())
                 .birthday(user.getBirthday())
-                .friends(user.getFriends())
+                .friends(user.getFriends() == null ? user.getFriends() : new HashSet<>())
                 .build();
 
         users.put(id, newUser);
@@ -43,7 +44,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .login(user.getLogin())
                 .name(user.getName() == null ? user.getLogin() : user.getName())
                 .birthday(user.getBirthday())
-                .friends(user.getFriends())
+                .friends(user.getFriends() == null ? user.getFriends() : new HashSet<>())
                 .build();
 
         users.put(user.getId(), newUser);
