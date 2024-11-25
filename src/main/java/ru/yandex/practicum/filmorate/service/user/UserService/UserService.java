@@ -54,17 +54,11 @@ public class UserService {
         }
 
         Set<Long> userFriends = user.getFriends();
-        if (userFriends == null) {
-            userFriends = new HashSet<>();
-        }
         userFriends.add(friendId);
         user.setFriends(userFriends);
         userStorage.update(user);
 
         Set<Long> friendFriends = friend.getFriends();
-        if (friendFriends == null) {
-            friendFriends = new HashSet<>();
-        }
         friendFriends.add(userId);
         friend.setFriends(friendFriends);
         userStorage.update(friend);
@@ -84,44 +78,55 @@ public class UserService {
         }
 
         Set<Long> userFriends = user.getFriends();
-        if (userFriends != null) {
-            userFriends.remove(friendId);
-            user.setFriends(userFriends);
-            userStorage.update(user);
-        }
+        userFriends.remove(friendId);
+        user.setFriends(userFriends);
+        userStorage.update(user);
 
         Set<Long> friendFriends = friend.getFriends();
-        if (friendFriends != null) {
-            friendFriends.remove(userId);
-            friend.setFriends(friendFriends);
-            userStorage.update(friend);
-        }
+        friendFriends.remove(userId);
+        friend.setFriends(friendFriends);
+        userStorage.update(friend);
 
         return user;
     }
 
-    public Set<Long> getFriends(Long userId) {
+    public Collection<User> getFriends(Long userId) {
         final User user = userStorage.get(userId);
+        final Collection<User> tmpUserList = new HashSet<>();
+
         if (user == null) {
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
         }
-        return user.getFriends();
+
+        for (Long id : user.getFriends()) {
+            tmpUserList.add(userStorage.get(id));
+        }
+
+        return tmpUserList;
     }
 
-    public Set<Long> getCommonFriends(Long id, Long otherId) {
+    public Collection<User> getCommonFriends(Long id, Long otherId) {
         final User user = userStorage.get(id);
+        final User otherUser = userStorage.get(otherId);
+        final Collection<User> tmpUserList = new HashSet<>();
+
         if (user == null) {
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", id));
         }
 
-        final User otherUser = userStorage.get(otherId);
         if (otherUser == null) {
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", otherId));
         }
 
-        return user.getFriends().stream()
+        final Set<Long> commonFriendsIdsList = user.getFriends().stream()
                 .filter(otherUser.getFriends()::contains)
                 .collect(Collectors.toSet());
+
+        for (Long userId : commonFriendsIdsList) {
+            tmpUserList.add(userStorage.get(userId));
+        }
+
+        return tmpUserList;
     }
 
 }

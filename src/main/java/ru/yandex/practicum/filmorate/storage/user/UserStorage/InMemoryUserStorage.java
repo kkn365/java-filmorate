@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -20,6 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User put(User user) {
         final Long id = getNextId();
+        Set<Long> emptyFriendsList = new HashSet<>();
 
         User newUser = User.builder()
                 .id(id)
@@ -27,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .login(user.getLogin())
                 .name(user.getName() == null ? user.getLogin() : user.getName())
                 .birthday(user.getBirthday())
-                .friends(user.getFriends() == null ? user.getFriends() : new HashSet<>())
+                .friends(user.getFriends() == null ? emptyFriendsList : user.getFriends())
                 .build();
 
         users.put(id, newUser);
@@ -37,6 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        Set<Long> emptyFriendsList = new HashSet<>();
 
         User newUser = User.builder()
                 .id(user.getId())
@@ -44,7 +47,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .login(user.getLogin())
                 .name(user.getName() == null ? user.getLogin() : user.getName())
                 .birthday(user.getBirthday())
-                .friends(user.getFriends() == null ? user.getFriends() : new HashSet<>())
+                .friends(user.getFriends() == null ? emptyFriendsList : user.getFriends())
                 .build();
 
         users.put(user.getId(), newUser);

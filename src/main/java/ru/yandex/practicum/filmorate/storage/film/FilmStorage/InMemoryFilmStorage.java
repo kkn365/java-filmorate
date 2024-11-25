@@ -14,7 +14,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private Long filmIdGenerator = 0L;
 
     public Long getNextId() {
-        return filmIdGenerator++;
+        return ++filmIdGenerator;
     }
 
     @Override
