@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 @Component
@@ -30,6 +31,8 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .description(newFilm.getDescription())
                 .releaseDate(newFilm.getReleaseDate())
                 .duration(newFilm.getDuration())
+                .userIds(new HashSet<>())
+                .rate(newFilm.getRate())
                 .build();
         films.put(film.getId(), film);
 

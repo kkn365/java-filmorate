@@ -20,4 +20,10 @@ public class CustomExceptionHandler {
         return new ErrorResponse("Ошибка с входным параметром.", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleThrowable(final Throwable e) {
+        return new ErrorResponse("Ошибка с входным параметром.", e.getMessage());
+    }
+
 }

@@ -12,8 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage.UserStorage;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utility.Constants.DEFAULT_FILM_COUNT;
@@ -61,12 +59,7 @@ public class FilmService {
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
         }
 
-        Set<Long> liked = film.getLiked();
-        if (liked == null) {
-            liked = new HashSet<>();
-        }
-        liked.add(userId);
-        film.setLiked(liked);
+        film.addLike(userId);
         return filmStorage.update(film);
     }
 
@@ -81,11 +74,7 @@ public class FilmService {
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
         }
 
-        Set<Long> liked = film.getLiked();
-        if (liked != null) {
-            liked.remove(userId);
-            film.setLiked(liked);
-        }
+        film.removeLike(userId);
         return filmStorage.update(film);
     }
 
@@ -93,16 +82,8 @@ public class FilmService {
         if (count == null) {
             count = DEFAULT_FILM_COUNT;
         }
-        Comparator<Film> filmPopularityComparator = new Comparator<Film>() {
-            @Override
-            public int compare(Film f1, Film f2) {
-                Integer param1 = f1.getLiked().size();
-                Integer param2 = f2.getLiked().size();
-                return (param2).compareTo(param1);
-            }
-        };
+        Comparator<Film> filmPopularityComparator = (f1, f2) -> f2.getRate() - f1.getRate();
         return filmStorage.getAll().stream()
-                .filter(film -> film.getLiked() != null)
                 .sorted(filmPopularityComparator)
                 .limit(count)
                 .collect(Collectors.toList());
