@@ -1,0 +1,7 @@
+logging:
+  level:
+    org.zalando.logbook: TRACE
+
+filmorate:
+  default:
+    popular-list-count: 10
