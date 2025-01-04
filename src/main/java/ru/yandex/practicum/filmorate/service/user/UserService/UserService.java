@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service.user.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -32,10 +34,12 @@ public class UserService {
         final Long id = user.getId();
 
         if (id == null) {
+            log.error("Не указан id в теле запроса: {}", user);
             throw new ValidationException("Должен быть указан id пользователя.");
         }
 
         if (userStorage.get(id) == null) {
+            log.error("Не найден пользователь с id={}", id);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", id));
         }
 
@@ -45,11 +49,13 @@ public class UserService {
     public User addFriend(Long userId, Long friendId) {
         final User user = userStorage.get(userId);
         if (user == null) {
+            log.error("Не найден пользователь с id={}", userId);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
         }
 
         final User friend = userStorage.get(friendId);
         if (friend == null) {
+            log.error("Не найден пользователь с id={}", friendId);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", friendId));
         }
 
@@ -69,11 +75,13 @@ public class UserService {
     public User deleteFriend(Long userId, Long friendId) {
         final User user = userStorage.get(userId);
         if (user == null) {
+            log.error("Не найден пользователь с id={}", userId);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
         }
 
         final User friend = userStorage.get(friendId);
         if (friend == null) {
+            log.error("Не найден пользователь с id={}", friendId);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", friendId));
         }
 
@@ -95,6 +103,7 @@ public class UserService {
         final Collection<User> tmpUserList = new HashSet<>();
 
         if (user == null) {
+            log.error("Не найден пользователь с id={}", userId);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
         }
 
@@ -111,10 +120,12 @@ public class UserService {
         final Collection<User> tmpUserList = new HashSet<>();
 
         if (user == null) {
+            log.error("Не найден пользователь с id={}", id);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", id));
         }
 
         if (otherUser == null) {
+            log.error("Не найден пользователь с id={}", otherId);
             throw new NotFoundException(String.format("Пользователь с id=%d не найден.", otherId));
         }
 
