@@ -107,7 +107,18 @@ public class InDataBaseFilmStorage implements FilmStorage {
     @Override
     public Film putLike(Long filmId, Long userId) {
         String sqlQuery = "INSERT INTO likes(user_id, film_id) VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        PreparedStatementCreator preparedStatementCreator = con -> {
+            PreparedStatement stmt = con.prepareStatement(sqlQuery, new String[]{"like_id"});
+            stmt.setLong(1, userId);
+            stmt.setLong(2, filmId);
+            return stmt;
+        };
+
+        jdbcTemplate.update(preparedStatementCreator, keyHolder);
+
         increaseFilmRank(filmId);
         return getFilmById(filmId);
     }
