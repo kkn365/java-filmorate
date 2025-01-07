@@ -43,8 +43,7 @@ public class FilmService {
                     .filter(mpa -> mpa.getId().equals(film.getMpa().getId()))
                     .findFirst()
                     .map(MPA::getName)
-                    .get()
-                    .toString();
+                    .get();
             film.getMpa().setName(mpaName);
 
             final Set<Genre> genres = allFilmsGenres
