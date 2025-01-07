@@ -60,7 +60,7 @@ public class UserController {
         log.info("Получен запрос 'DELETE /users/{}/friends/{}'", id, friendId);
         Collection<UserDto> users = userService.deleteFriend(id, friendId).stream()
                 .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
         log.info("Отправлен ответ на запрос 'DELETE /users/{}/friends/{}' с телом: {}", id, friendId, users);
         return users;
     }

@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collection;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -47,7 +48,7 @@ public class InDataBaseUserStorage implements UserStorage {
 
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
 
-        user.setId(keyHolder.getKey().longValue());
+        user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
         return user;
     }

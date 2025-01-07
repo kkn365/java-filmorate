@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class FilmService {
         for (Film film : films) {
 
             final String mpaName = mpas.stream()
-                    .filter(mpa -> mpa.getId() == film.getMpa().getId())
+                    .filter(mpa -> mpa.getId().equals(film.getMpa().getId()))
                     .findFirst()
                     .map(MPA::getName)
                     .get()
@@ -48,7 +49,7 @@ public class FilmService {
 
             final Set<Genre> genres = allFilmsGenres
                     .stream()
-                    .filter(genre -> genre.getFilmId() == film.getId())
+                    .filter(genre -> genre.getFilmId().equals(film.getId()))
                     .map(genre -> Genre.builder().id(genre.getGenreId()).name(genre.getGenreName()).build())
                     .collect(Collectors.toSet());
             film.setGenres(genres);
@@ -70,9 +71,9 @@ public class FilmService {
             final List<Integer> currentFilmGenresIds = genreService.getAllGenres()
                     .stream()
                     .map(Genre::getId)
-                    .collect(Collectors.toList());
+                    .toList();
 
-            for (Integer genreId : incomingFilmGenres.stream().map(Genre::getId).collect(Collectors.toList())) {
+            for (Integer genreId : incomingFilmGenres.stream().map(Genre::getId).toList()) {
                 if (!currentFilmGenresIds.contains(genreId)) {
                     log.error("Не найден жанр с id={}", genreId);
                     throw new ValidationException(String.format("Жанр с id=%d не найден.", genreId));
@@ -81,8 +82,7 @@ public class FilmService {
 
         }
 
-        Film newFilm = filmStorage.addNewFilm(film);
-        return newFilm;
+        return filmStorage.addNewFilm(film);
     }
 
     public Film updateFilmData(Film film) {
@@ -132,7 +132,7 @@ public class FilmService {
 
     public Film getFilmById(Long id) {
         Film film = filmStorage.getFilmById(id);
-        Set<Genre> filmGenres = genreService.getFilmGenresByFilmId(id).stream().collect(Collectors.toSet());
+        Set<Genre> filmGenres = new HashSet<>(genreService.getFilmGenresByFilmId(id));
         film.setGenres(filmGenres);
         film.setMpa(mpaService.getMPAbyId(film.getMpa().getId()));
         return film;

@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -48,7 +49,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
 
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
 
-        film.setId(keyHolder.getKey().longValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
         if (film.getGenres() != null) {
             addNewFilmGenres(film);
@@ -62,10 +63,10 @@ public class InDataBaseFilmStorage implements FilmStorage {
         final Long filmId = film.getId();
         StringBuilder builder = new StringBuilder();
         builder.append("INSERT INTO films_genres(film_id, genre_id) VALUES ");
-        for (Integer genreId : film.getGenres().stream().map(Genre::getId).collect(Collectors.toList())) {
-            builder.append("(" + filmId + ", " + genreId + "), ");
+        for (Integer genreId : film.getGenres().stream().map(Genre::getId).toList()) {
+            builder.append("(").append(filmId).append(", ").append(genreId).append("), ");
         }
-        String sqlQuery = builder.toString().replaceAll(",\s*$", "");
+        String sqlQuery = builder.toString().replaceAll(", *$", "");
         jdbcTemplate.execute(sqlQuery);
     }
 
