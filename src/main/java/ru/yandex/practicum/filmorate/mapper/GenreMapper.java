@@ -17,6 +17,7 @@ public class GenreMapper {
 
         return genre;
     }
+
     public static GenreDto mapToGenreDto(Genre genre) {
 
         GenreDto dto = GenreDto.builder()
