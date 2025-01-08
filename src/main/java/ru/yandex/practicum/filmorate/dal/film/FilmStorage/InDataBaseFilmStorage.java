@@ -93,7 +93,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, filmRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
-            log.error("Не найден фильм с id={}", id);
+            log.warn("Не найден фильм с id={}", id);
             return null;
         }
     }

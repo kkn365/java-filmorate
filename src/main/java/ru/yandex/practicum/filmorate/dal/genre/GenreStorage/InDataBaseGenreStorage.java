@@ -27,7 +27,7 @@ public class InDataBaseGenreStorage implements GenreStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, genreRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
-            log.error("Не найден жанр с id={}", id);
+            log.warn("Не найден жанр с id={}", id);
             return null;
         }
     }

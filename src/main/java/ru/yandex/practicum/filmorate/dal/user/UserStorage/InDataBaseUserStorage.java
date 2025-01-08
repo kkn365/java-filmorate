@@ -77,7 +77,7 @@ public class InDataBaseUserStorage implements UserStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, userRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
-            log.error("Не найден пользователь с id={}", id);
+            log.warn("Не найден пользователь с id={}", id);
             return null;
         }
     }
@@ -113,7 +113,7 @@ public class InDataBaseUserStorage implements UserStorage {
 
         Long id = keyHolder.getKeyAs(Long.class);
         if (id == null) {
-            log.error("Не удалось сохранить данные.");
+            log.warn("Не удалось сохранить данные.");
             throw new InternalServerException("Не удалось сохранить данные.");
         }
 

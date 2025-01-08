@@ -24,7 +24,7 @@ public class InDataBaseMPAStorage implements MPAStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, mpaRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
-            log.error("Не найден MPA с id={}", id);
+            log.warn("Не найден MPA с id={}", id);
             return null;
         }
     }
