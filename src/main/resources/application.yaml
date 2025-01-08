@@ -5,8 +5,8 @@ filmorate:
 
 logging:
   level:
-    ru.yandex.practicum.filmorate: INFO
     org.zalando.logbook: TRACE
+    ru.yandex.practicum.filmorate: INFO
 
 spring:
   application.name: Filmorate
