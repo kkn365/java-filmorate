@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.film.FilmService.FilmService;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
 
@@ -16,32 +16,40 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public Collection<Film> getAll() {
+    public Collection<FilmDto> getAll() {
         return filmService.getFilms();
     }
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film newFilm) {
+    public FilmDto createFilm(@Valid @RequestBody FilmDto newFilm) {
         return filmService.addNewFilm(newFilm);
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
+    public FilmDto updateFilm(@Valid @RequestBody FilmDto film) {
         return filmService.updateFilmData(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film putLike(@PathVariable Long id, @PathVariable Long userId) {
+    public FilmDto putLike(@PathVariable Long id, @PathVariable Long userId) {
         return filmService.putLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+    public FilmDto deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         return filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam int count) {
+    public Collection<FilmDto> getPopular(
+            @RequestParam(defaultValue = "${filmorate.default.popular-list-count}") Integer count
+    ) {
         return filmService.getPopular(count);
     }
+
+    @GetMapping("/{id}")
+    public FilmDto getFilm(@PathVariable Long id) {
+        return filmService.getFilmById(id);
+    }
+
 }
