@@ -8,29 +8,23 @@ import ru.yandex.practicum.filmorate.model.User;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserMapper {
     public static User mapToUser(UserDto request) {
-
-        User user = User.builder()
+        return User.builder()
                 .id(request.getId())
                 .email(request.getEmail())
                 .login(request.getLogin())
                 .name(request.getName())
                 .birthday(request.getBirthday())
                 .build();
-
-        return user;
     }
 
     public static UserDto mapToUserDto(User user) {
-
-        UserDto dto = UserDto.builder()
+        return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .login(user.getLogin())
                 .name(user.getName())
                 .birthday(user.getBirthday())
                 .build();
-
-        return dto;
     }
 
 }

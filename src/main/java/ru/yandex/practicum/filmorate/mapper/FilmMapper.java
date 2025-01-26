@@ -9,8 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 public class FilmMapper {
 
     public static Film mapToFilm(FilmDto request) {
-
-        Film film = Film.builder()
+        return Film.builder()
                 .id(request.getId())
                 .name(request.getName())
                 .description(request.getDescription())
@@ -19,13 +18,10 @@ public class FilmMapper {
                 .mpa(request.getMpa())
                 .genres(request.getGenres())
                 .build();
-
-        return film;
     }
 
     public static FilmDto mapToFilmDto(Film film) {
-
-        FilmDto dto = FilmDto.builder()
+        return FilmDto.builder()
                 .id(film.getId())
                 .name(film.getName())
                 .description(film.getDescription())
@@ -34,7 +30,5 @@ public class FilmMapper {
                 .mpa(film.getMpa())
                 .genres(film.getGenres())
                 .build();
-
-        return dto;
     }
 }

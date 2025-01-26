@@ -15,23 +15,15 @@ import java.util.Set;
 @Data
 @Builder
 public class FilmDto {
-
     private Long id;
-
     @NotBlank
     private String name;
-
     @Size(max = 200)
     private String description;
-
     @MinimumFilmReleaseDate
     private LocalDate releaseDate;
-
     @Positive
     private Integer duration;
-
     private MPA mpa;
-
     private Set<Genre> genres;
-
 }

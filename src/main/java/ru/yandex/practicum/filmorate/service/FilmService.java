@@ -23,18 +23,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService {
 
-    @Autowired
-    private FilmStorage filmStorage;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private MpaService mpaService;
-    @Autowired
-    private GenreService genreService;
+    private final FilmStorage filmStorage;
+    private final UserService userService;
+    private final MpaService mpaService;
+    private final GenreService genreService;
 
     public Collection<FilmDto> getFilms() {
         Collection<Film> films = filmStorage.getAllFilms();

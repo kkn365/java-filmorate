@@ -14,13 +14,12 @@ import ru.yandex.practicum.filmorate.model.MPA;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MpaService {
 
-    @Autowired
-    private MPAStorage mpaStorage;
+    private final MPAStorage mpaStorage;
 
     public Collection<MpaDto> getAllMPAs() {
         return mpaStorage.getAllMpas()
