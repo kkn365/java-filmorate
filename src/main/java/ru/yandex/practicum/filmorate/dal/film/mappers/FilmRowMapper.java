@@ -18,7 +18,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .id(resultSet.getInt("mpa_id"))
                 .build();
 
-        Film film = Film.builder()
+        return Film.builder()
                 .id(resultSet.getLong("film_id"))
                 .name(resultSet.getString("name"))
                 .description(resultSet.getString("description"))
@@ -26,8 +26,5 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .duration(resultSet.getInt("duration"))
                 .mpa(mpa)
                 .build();
-
-        return film;
-
     }
 }

@@ -18,11 +18,21 @@ public class InDataBaseMPAStorage implements MPAStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MPARowMapper mpaRowMapper;
 
+    private static final String GET_MPA_BY_ID = """
+            SELECT mpa_id, name
+            FROM mpas
+            WHERE mpa_id = ?
+            """;
+    private static final String GET_ALL_MPAS = """
+            SELECT mpa_id, name
+            FROM mpas
+            ORDER BY mpa_id
+            """;
+
     @Override
     public MPA getMpaById(int id) {
-        String sqlQuery = "SELECT mpa_id, name FROM mpas WHERE mpa_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, mpaRowMapper, id);
+            return jdbcTemplate.queryForObject(GET_MPA_BY_ID, mpaRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Не найден MPA с id={}", id);
             return null;
@@ -31,7 +41,6 @@ public class InDataBaseMPAStorage implements MPAStorage {
 
     @Override
     public Collection<MPA> getAllMpas() {
-        String sqlQuery = "SELECT mpa_id, name FROM mpas ORDER BY mpa_id";
-        return jdbcTemplate.queryForStream(sqlQuery, mpaRowMapper).toList();
+        return jdbcTemplate.queryForStream(GET_ALL_MPAS, mpaRowMapper).toList();
     }
 }

@@ -13,7 +13,6 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode(of = {"id", "name", "releaseDate"})
 public class Film {
-
     private Long id;
     private String name;
     private String description;
@@ -22,5 +21,4 @@ public class Film {
     private MPA mpa;
     private Set<Genre> genres;
     private Integer rate;
-
 }

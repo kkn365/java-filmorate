@@ -14,13 +14,12 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GenreService {
 
-    @Autowired
-    private GenreStorage genreStorage;
+    private final GenreStorage genreStorage;
 
     public Collection<GenreDto> getAllGenres() {
         return genreStorage.getAllGenres()

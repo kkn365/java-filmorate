@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class UserDto {
-
     private long id;
     @Email
     private String email;
@@ -20,5 +19,4 @@ public class UserDto {
     private String name;
     @Past
     private LocalDate birthday;
-
 }

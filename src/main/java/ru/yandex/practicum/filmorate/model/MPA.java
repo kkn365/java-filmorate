@@ -6,8 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class MPA {
-
     private Integer id;
     private String name;
-
 }

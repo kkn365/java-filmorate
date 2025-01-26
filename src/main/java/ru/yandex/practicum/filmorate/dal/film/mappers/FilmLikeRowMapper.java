@@ -11,13 +11,9 @@ import java.sql.SQLException;
 public class FilmLikeRowMapper implements RowMapper<LikeDto> {
     @Override
     public LikeDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-        LikeDto dto = LikeDto.builder()
+        return LikeDto.builder()
                 .userId(rs.getLong("user_id"))
                 .filmId(rs.getLong("film_id"))
                 .build();
-
-        return dto;
-
     }
 }

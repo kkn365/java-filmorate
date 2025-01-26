@@ -27,55 +27,94 @@ public class InDataBaseUserStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper userRowMapper;
 
+    private static final String INSERT_INTO_USERS = """
+            INSERT INTO users(login, name, email, birthday)
+            VALUES (?, ?, ?, ?)
+            """;
+    private static final String UPDATE_USER = """
+            UPDATE users
+            SET login = ?, name = ?, email = ?, birthday = ?
+            WHERE user_id = ?
+            """;
+    private static final String GET_USER_BY_ID = """
+            SELECT user_id, login, name, email, birthday
+            FROM users
+            WHERE user_id = ?
+            """;
+    private static final String GET_ALL_USERS = """
+            SELECT user_id, login, name, email, birthday
+            FROM users
+            ORDER BY user_id
+            """;
+    private static final String GET_FRIENDS = """
+            SELECT u.user_id, u.login, u.name, u.email, u.birthday
+            FROM friendships AS f
+            JOIN users AS u ON u.user_id = f.friend_id
+            WHERE f.user_id = ?
+            ORDER BY u.user_id
+            """;
+    private static final String INSERT_INTO_FRIENDSHIPS = """
+            INSERT INTO friendships(user_id, friend_id)
+            VALUES (?, ?)
+            """;
+    private static final String DELETE_FRIEND = """
+            DELETE FROM friendships
+            WHERE user_id = ? AND friend_id = ?
+            """;
+    private static final String GET_COMMON_FRIENDS = """
+            SELECT user_id, email, login, name, birthday
+            FROM users
+            WHERE user_id IN (SELECT f1.friend_id
+                              FROM friendships f1
+                              WHERE f1.user_id = ?
+                              INTERSECT
+                              SELECT f2.friend_id
+                              FROM friendships f2
+                              WHERE f2.user_id = ? )
+            """;
+    private static final String GET_FRIENDSHIP_ID = """
+            SELECT friendship_id
+            FROM friendships
+            WHERE user_id = ? AND friend_id = ?
+            """;
+
     @Override
     public User addNewUser(User user) {
-        String sqlQuery = "INSERT INTO users(login, name, email, birthday) VALUES (?, ?, ?, ?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
-
         PreparedStatementCreator preparedStatementCreator = con -> {
-            PreparedStatement stmt = con.prepareStatement(sqlQuery, new String[]{"user_id"});
+            PreparedStatement stmt = con.prepareStatement(INSERT_INTO_USERS, new String[]{"user_id"});
             stmt.setString(1, user.getLogin());
             stmt.setString(2, user.getName());
             stmt.setString(3, user.getEmail());
             stmt.setDate(4, Date.valueOf(user.getBirthday()));
             return stmt;
         };
-
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
-
         user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-
         return user;
     }
 
     @Override
     public User updateCurrentUser(User user) {
-        String sqlQuery = "UPDATE users SET login = ?, name = ?, email = ?, birthday = ? WHERE user_id = ?";
-
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
-
-        jdbcTemplate.update(sqlQuery,
+        jdbcTemplate.update(UPDATE_USER,
                 user.getLogin(),
                 user.getName(),
                 user.getEmail(),
                 user.getBirthday(),
                 user.getId());
-
         return user;
     }
 
     @Override
     public User getUserById(Long id) {
-        String sqlQuery = "SELECT user_id, login, name, email, birthday FROM users WHERE user_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, userRowMapper, id);
+            return jdbcTemplate.queryForObject(GET_USER_BY_ID, userRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Не найден пользователь с id={}", id);
             return null;
@@ -84,64 +123,45 @@ public class InDataBaseUserStorage implements UserStorage {
 
     @Override
     public Collection<User> getAllUsers() {
-        String sqlQuery = "SELECT user_id, login, name, email, birthday FROM users";
-        return jdbcTemplate.queryForStream(sqlQuery, userRowMapper).toList();
+        return jdbcTemplate.queryForStream(GET_ALL_USERS, userRowMapper).toList();
     }
 
     @Override
     public Collection<User> getFriends(Long id) {
-        String sqlQuery = "SELECT u.user_id, u.login, u.name, u.email, u.birthday FROM friendships AS f " +
-                "JOIN users AS u ON u.user_id = f.friend_id " +
-                "WHERE f.user_id = ?";
-        return jdbcTemplate.queryForStream(sqlQuery, userRowMapper, id).toList();
+        return jdbcTemplate.queryForStream(GET_FRIENDS, userRowMapper, id).toList();
     }
 
     @Override
     public void addFriend(Long userId, Long friendId) {
-        String sqlQuery = "INSERT INTO friendships(user_id, friend_id) VALUES (?, ?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
         PreparedStatementCreator preparedStatementCreator = con -> {
-            PreparedStatement stmt = con.prepareStatement(sqlQuery, new String[]{"friend_id"});
+            PreparedStatement stmt = con.prepareStatement(INSERT_INTO_FRIENDSHIPS, new String[]{"friend_id"});
             stmt.setLong(1, userId);
             stmt.setLong(2, friendId);
             return stmt;
         };
-
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
-
         Long id = keyHolder.getKeyAs(Long.class);
         if (id == null) {
             log.warn("Не удалось сохранить данные.");
             throw new InternalServerException("Не удалось сохранить данные.");
         }
-
     }
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
-        String sqlQuery = "DELETE FROM friendships where user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
+        jdbcTemplate.update(DELETE_FRIEND, userId, friendId);
     }
 
     @Override
     public Collection<User> getCommonFriends(Long userId, Long friendId) {
-        String sqlQuery = "SELECT user_id, email, login, name, birthday FROM users " +
-                "WHERE user_id IN ( " +
-                "SELECT friend_id FROM friendships f1 " +
-                "WHERE f1.user_id = ? " +
-                "INTERSECT " +
-                "SELECT friend_id FROM friendships f2 " +
-                "WHERE f2.user_id = ? )";
-        return jdbcTemplate.queryForStream(sqlQuery, userRowMapper, userId, friendId).toList();
+        return jdbcTemplate.queryForStream(GET_COMMON_FRIENDS, userRowMapper, userId, friendId).toList();
     }
 
     @Override
     public Long getFriendShipId(Long userId, Long friendId) {
-        String sqlQuery = "SELECT friendship_id FROM friendships WHERE user_id = ? AND friend_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, Long.class, userId, friendId);
+            return jdbcTemplate.queryForObject(GET_FRIENDSHIP_ID, Long.class, userId, friendId);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }

@@ -6,7 +6,6 @@ filmorate:
 logging:
   level:
     org.zalando.logbook: TRACE
-    ru.yandex.practicum.filmorate: INFO
 
 spring:
   application.name: Filmorate
@@ -17,7 +16,7 @@ spring:
     username: sa
     password: password
     hikari:
-      maximum-pool-size: 100
+      maximum-pool-size: 1500
   h2:
     console:
       enabled: false

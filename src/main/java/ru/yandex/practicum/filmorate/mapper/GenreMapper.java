@@ -9,23 +9,17 @@ import ru.yandex.practicum.filmorate.model.Genre;
 public class GenreMapper {
 
     public static Genre mapToGenre(GenreDto request) {
-
-        Genre genre = Genre.builder()
+        return Genre.builder()
                 .id(request.getId())
                 .name(request.getName())
                 .build();
-
-        return genre;
     }
 
     public static GenreDto mapToGenreDto(Genre genre) {
-
-        GenreDto dto = GenreDto.builder()
+        return GenreDto.builder()
                 .id(genre.getId())
                 .name(genre.getName())
                 .build();
-
-        return dto;
     }
 
 }

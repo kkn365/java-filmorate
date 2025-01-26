@@ -13,7 +13,7 @@ public class MinimumDateValidator implements ConstraintValidator<MinimumFilmRele
 
     @Override
     public void initialize(MinimumFilmReleaseDate constraintAnnotation) {
-        minimumDate = LocalDate.parse(constraintAnnotation.value().toString().formatted(DATE_TIME_FORMATTER));
+        minimumDate = LocalDate.parse(constraintAnnotation.value().formatted(DATE_TIME_FORMATTER));
     }
 
     @Override
