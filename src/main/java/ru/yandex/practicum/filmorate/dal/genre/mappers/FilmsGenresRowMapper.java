@@ -11,14 +11,10 @@ import java.sql.SQLException;
 public class FilmsGenresRowMapper implements RowMapper<FilmGenresDto>  {
     @Override
     public FilmGenresDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-        FilmGenresDto dto = FilmGenresDto.builder()
+        return FilmGenresDto.builder()
                 .filmId(rs.getLong("film_id"))
                 .genreId(rs.getInt("genre_id"))
                 .genreName(rs.getString("name"))
                 .build();
-
-        return dto;
-
     }
 }

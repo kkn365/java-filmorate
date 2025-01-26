@@ -8,7 +8,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.time.format.DateTimeFormatter;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -16,8 +15,7 @@ import java.time.format.DateTimeFormatter;
 @Past
 public @interface MinimumFilmReleaseDate {
 
-    public static final String MIN_RELEASE_DATE = "1895-12-28";
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String MIN_RELEASE_DATE = "1895-12-28";
 
     String message() default "The release date of the film cannot be earlier {value}";
 

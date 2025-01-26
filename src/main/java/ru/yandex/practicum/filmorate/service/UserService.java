@@ -16,13 +16,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserService {
 
-    @Autowired
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     public Collection<UserDto> getAllUsers() {
         return userStorage.getAllUsers()

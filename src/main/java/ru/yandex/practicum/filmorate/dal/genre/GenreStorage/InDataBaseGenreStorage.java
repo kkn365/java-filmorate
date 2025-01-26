@@ -21,11 +21,33 @@ public class InDataBaseGenreStorage implements GenreStorage {
     private final GenreRowMapper genreRowMapper;
     private final FilmsGenresRowMapper filmsGenresRowMapper;
 
+    private static final String GET_GENRE_BY_ID = """
+            SELECT genre_id, name
+            FROM genres
+            WHERE genre_id = ?
+            """;
+    private static final String GET_ALL_GENRES = """
+            SELECT genre_id, name
+            FROM genres
+            ORDER BY genre_id
+            """;
+    private static final String GET_ALL_FILMS_GENRES = """
+            SELECT f.film_id, f.genre_id, g.name
+            FROM films_genres f
+            JOIN genres g ON f.genre_id = g.genre_id
+            """;
+    private static final String GET_FILM_GENRES = """
+            SELECT f.genre_id, g.name
+            FROM films_genres f
+            JOIN genres g ON f.genre_id = g.genre_id
+            WHERE f.film_id = ?
+            ORDER BY f.genre_id
+            """;
+
     @Override
     public Genre getGenreById(int id) {
-        String sqlQuery = "SELECT genre_id, name FROM genres WHERE genre_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, genreRowMapper, id);
+            return jdbcTemplate.queryForObject(GET_GENRE_BY_ID, genreRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Не найден жанр с id={}", id);
             return null;
@@ -34,23 +56,17 @@ public class InDataBaseGenreStorage implements GenreStorage {
 
     @Override
     public Collection<Genre> getAllGenres() {
-        String sqlQuery = "SELECT genre_id, name FROM genres ORDER BY genre_id";
-        return jdbcTemplate.queryForStream(sqlQuery, genreRowMapper).toList();
+        return jdbcTemplate.queryForStream(GET_ALL_GENRES, genreRowMapper).toList();
     }
 
     @Override
     public Collection<FilmGenresDto> getAllFilmsGenres() {
-        String sqlQuery = "SELECT f.film_id, f.genre_id, g.name FROM films_genres f " +
-                "JOIN genres g ON f.genre_id = g.genre_id ";
-        return jdbcTemplate.queryForStream(sqlQuery, filmsGenresRowMapper).toList();
+        return jdbcTemplate.queryForStream(GET_ALL_FILMS_GENRES, filmsGenresRowMapper).toList();
     }
 
     @Override
     public Collection<Genre> getFilmGenres(Long filmId) {
-        String sqlQuery = "SELECT f.genre_id, g.name FROM films_genres f " +
-                "JOIN genres g ON f.genre_id = g.genre_id WHERE f.film_id = ? " +
-                "ORDER BY f.genre_id";
-        return jdbcTemplate.queryForStream(sqlQuery, genreRowMapper, filmId).toList();
+        return jdbcTemplate.queryForStream(GET_FILM_GENRES, genreRowMapper, filmId).toList();
     }
 
 }

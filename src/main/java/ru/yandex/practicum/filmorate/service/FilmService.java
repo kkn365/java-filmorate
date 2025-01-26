@@ -23,18 +23,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService {
 
-    @Autowired
-    private FilmStorage filmStorage;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private MpaService mpaService;
-    @Autowired
-    private GenreService genreService;
+    private final FilmStorage filmStorage;
+    private final UserService userService;
+    private final MpaService mpaService;
+    private final GenreService genreService;
 
     public Collection<FilmDto> getFilms() {
         Collection<Film> films = filmStorage.getAllFilms();
@@ -72,7 +68,7 @@ public class FilmService {
 
         final Integer mpaId = film.getMpa().getId();
         if (mpaId != null) {
-            mpaService.getMPAbyIdForNewFilm(mpaId);
+            mpaService.getMPAbyId(mpaId);
         }
 
         if (film.getGenres() != null) {
@@ -93,7 +89,7 @@ public class FilmService {
             for (Integer genreId : incomingFilmGenresIds) {
                 if (!currentFilmGenresIds.contains(genreId)) {
                     log.warn("Не найден жанр с id={}", genreId);
-                    throw new ValidationException(String.format("Жанр с id=%d не найден.", genreId));
+                    throw new NotFoundException(String.format("Жанр с id=%d не найден.", genreId));
                 }
             }
 
