@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.dal.genre.GenreStorage.GenreStorage;
 import ru.yandex.practicum.filmorate.dto.LikeDto;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -165,28 +164,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
      @Override
      public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year) {
         List<Object> params = new ArrayList<>();
-        if (genreId != null && genreId > 0) {
-                String sqlCountGenre = "SELECT COUNT(*) FROM films AS f WHERE f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)";
-                params.add(genreId);
-                Integer genreCount = jdbcTemplate.queryForObject(sqlCountGenre, params.toArray(), Integer.class);
-
-                if (genreCount == null || genreCount == 0) {
-                    throw new NotFoundException("Нет фильмов для указанного жанра.");
-                }
-            }
-
-            if (year != null && year > 0) {
-                String sqlCountYear = "SELECT COUNT(*) FROM films AS f WHERE YEAR(f.release_date) = ?";
-                params.clear();
-                params.add(year);
-                Integer yearCount = jdbcTemplate.queryForObject(sqlCountYear, params.toArray(), Integer.class);
-                if (yearCount == null || yearCount == 0) {
-                    throw new NotFoundException("Нет фильмов для указанного года.");
-                }
-            }
-
-            StringBuilder sql = new StringBuilder("SELECT f.* FROM films AS f WHERE 1=1");
-            params.clear();
+        StringBuilder sql = new StringBuilder("SELECT f.* FROM films AS f WHERE true");
 
             if (genreId != null && genreId > 0) {
                 sql.append(" AND f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)");
