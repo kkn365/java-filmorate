@@ -54,7 +54,6 @@ public class FilmService {
                             .build())
                     .collect(Collectors.toSet());
             film.setGenres(genres);
-
         }
 
         return films
