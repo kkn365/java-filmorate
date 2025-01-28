@@ -132,8 +132,8 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(deletedLikeFilm);
     }
 
-    public Collection<FilmDto> getPopular(Integer count) {
-        return filmStorage.getPopularFilms(count)
+    public Collection<FilmDto> getPopular(Integer count, Integer genreId, Integer year) {
+        return filmStorage.getPopularFilms(count, genreId, year)
                 .stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
