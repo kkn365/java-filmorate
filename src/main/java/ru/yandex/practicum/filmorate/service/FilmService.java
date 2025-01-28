@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.mapper.MPAMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.util.Collection;
@@ -156,4 +157,9 @@ public class FilmService {
 
         return FilmMapper.mapToFilmDto(film);
     }
+
+    public Collection<Like> getDataField(Long userId) {
+        return filmStorage.getDataField(userId);
+    }
+
 }
