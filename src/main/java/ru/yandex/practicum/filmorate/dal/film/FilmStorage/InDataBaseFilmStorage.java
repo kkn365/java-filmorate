@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.dto.LikeDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -170,6 +169,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
                 String sqlCountGenre = "SELECT COUNT(*) FROM films AS f WHERE f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)";
                 params.add(genreId);
                 Integer genreCount = jdbcTemplate.queryForObject(sqlCountGenre, params.toArray(), Integer.class);
+
                 if (genreCount == null || genreCount == 0) {
                     throw new NotFoundException("Нет фильмов для указанного жанра.");
                 }
