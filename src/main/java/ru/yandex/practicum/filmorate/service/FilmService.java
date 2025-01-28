@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.mapper.MPAMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -132,8 +131,8 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(deletedLikeFilm);
     }
 
-    public Collection<FilmDto> getPopular(Integer count) {
-        return filmStorage.getPopularFilms(count)
+    public Collection<FilmDto> getPopular(Integer count, Integer genreId, Integer year) {
+        return filmStorage.getPopularFilms(count, genreId, year)
                 .stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());

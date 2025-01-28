@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dal.film.FilmStorage;
 
 import ru.yandex.practicum.filmorate.dto.LikeDto;
 import ru.yandex.practicum.filmorate.model.Film;
-
 import java.util.Collection;
 
 public interface FilmStorage {
@@ -21,6 +20,6 @@ public interface FilmStorage {
 
     Film deleteLike(Long filmId, Long userId);
 
-    Collection<Film> getPopularFilms(Integer limit);
+    Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year);
 
 }
