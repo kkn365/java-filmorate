@@ -11,9 +11,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
-import ru.yandex.practicum.filmorate.dto.LikeDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Like;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -48,6 +48,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
     private static final String GET_ALL_FILMS = """
             SELECT film_id, name, description, release_date, duration, mpa_id
             FROM films
+            ORDER BY film_id
             """;
     private static final String INSERT_INTO_LIKES = """
             INSERT INTO likes(user_id, film_id)
@@ -80,6 +81,25 @@ public class InDataBaseFilmStorage implements FilmStorage {
             UPDATE films
             SET rank = rank - 1
             WHERE film_id = ?
+            """;
+    private static final String GET_DATA_FIELD = """
+            WITH user_liked_films AS (
+                SELECT fl.film_id
+                FROM likes fl
+                WHERE fl.user_id = ?
+            )
+            SELECT user_id, film_id
+            FROM likes
+            WHERE user_id IN (SELECT fl1.user_id
+                              FROM likes fl1
+                              WHERE fl1.user_id IN (SELECT DISTINCT fl2.user_id
+                                                    FROM likes fl2
+                                                    WHERE fl2.film_id IN (SELECT film_id
+                                                                          FROM user_liked_films)
+                                                   )
+                              GROUP BY fl1.user_id
+                              HAVING count(fl1.film_id) >= (SELECT count(film_id) FROM user_liked_films) / 2
+                             )
             """;
 
     @Override
@@ -145,7 +165,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
     }
 
     @Override
-    public LikeDto getLike(Long filmId, Long userId) {
+    public Like getLike(Long filmId, Long userId) {
         try {
             return jdbcTemplate.queryForObject(GET_LIKE, filmLikeRowMapper, userId, filmId);
         } catch (EmptyResultDataAccessException ignored) {
@@ -163,6 +183,11 @@ public class InDataBaseFilmStorage implements FilmStorage {
     @Override
     public Collection<Film> getPopularFilms(Integer limit) {
         return jdbcTemplate.queryForStream(GET_POPULAR_FILMS, filmRowMapper, limit).toList();
+    }
+
+    @Override
+    public Collection<Like> getDataField(Long userId) {
+        return jdbcTemplate.queryForStream(GET_DATA_FIELD, filmLikeRowMapper, userId).toList();
     }
 
     private void addNewFilmGenres(Film film) {
