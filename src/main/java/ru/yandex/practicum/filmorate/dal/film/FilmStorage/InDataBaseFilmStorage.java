@@ -11,14 +11,15 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -30,6 +31,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmRowMapper filmRowMapper;
     private final FilmLikeRowMapper filmLikeRowMapper;
+    private final UserStorage userStorage;
 
     private static final String INSERT_INTO_FILMS = """
             INSERT INTO films(name, description, release_date, duration, mpa_id)
@@ -188,6 +190,25 @@ public class InDataBaseFilmStorage implements FilmStorage {
     @Override
     public Collection<Like> getDataField(Long userId) {
         return jdbcTemplate.queryForStream(GET_DATA_FIELD, filmLikeRowMapper, userId).toList();
+    }
+
+    @Override
+    public Collection<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
+        List<Like> userLikes = new ArrayList<>(getDataField(userId));
+        List<Like> friendLikes = new ArrayList<>(getDataField(friendId));
+
+        Set<Long> friendFilmIds = friendLikes.stream()
+                .map(Like::getFilmId)
+                .collect(Collectors.toSet());
+
+        Set<Long> filmIds = userLikes.stream()
+                .map(Like::getFilmId)
+                .filter(friendFilmIds::contains)
+                .collect(Collectors.toSet());
+
+        return filmIds.stream()
+                .map(this::getFilmById)
+                .toList();
     }
 
     private void addNewFilmGenres(Film film) {

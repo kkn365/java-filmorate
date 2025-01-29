@@ -25,4 +25,5 @@ public interface FilmStorage {
 
     Collection<Like> getDataField(Long userId);
 
+    Collection<Film> getCommonFilmsWithFriend(Long userId, Long friendId);
 }
