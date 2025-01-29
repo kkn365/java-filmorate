@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface FilmStorage {
 
@@ -24,5 +25,7 @@ public interface FilmStorage {
     Collection<Film> getPopularFilms(Integer limit);
 
     Collection<Like> getDataField(Long userId);
+
+    void deleteFilm(Long filmId);
 
 }

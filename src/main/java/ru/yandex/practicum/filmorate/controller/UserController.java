@@ -58,4 +58,10 @@ public class UserController {
         return recommendationService.getRecommendedFilmsList(id);
     }
 
+    @DeleteMapping("/{userId}")
+    public String deleteUser(@PathVariable Long userId){
+        userService.deleteUser(userId);
+        return "Пользователь успешно удален";
+    }
+
 }

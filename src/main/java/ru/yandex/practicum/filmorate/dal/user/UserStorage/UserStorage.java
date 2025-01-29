@@ -26,4 +26,6 @@ public interface UserStorage {
 
     Long getFriendShipId(Long userId, Long friendId);
 
+    void deleteUser(Long userId);
+
 }

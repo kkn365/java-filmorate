@@ -162,4 +162,8 @@ public class FilmService {
         return filmStorage.getDataField(userId);
     }
 
+    public void deleteFilm(Long filmId) {
+        filmStorage.deleteFilm(filmId);
+    }
+
 }

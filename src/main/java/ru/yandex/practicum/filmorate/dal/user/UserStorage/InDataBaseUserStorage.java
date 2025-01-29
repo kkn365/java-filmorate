@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.user.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
@@ -76,6 +77,11 @@ public class InDataBaseUserStorage implements UserStorage {
             SELECT friendship_id
             FROM friendships
             WHERE user_id = ? AND friend_id = ?
+            """;
+
+    private static final String DELETE_USER = """
+            DELETE FROM users u
+            WHERE user_id = ?
             """;
 
     @Override
@@ -164,6 +170,14 @@ public class InDataBaseUserStorage implements UserStorage {
             return jdbcTemplate.queryForObject(GET_FRIENDSHIP_ID, Long.class, userId, friendId);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
+        }
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        int usersDeleted = jdbcTemplate.update(DELETE_USER, userId);
+        if (usersDeleted < 1) {
+            throw new NotFoundException("Пользователь не найден в базе данных");
         }
     }
 

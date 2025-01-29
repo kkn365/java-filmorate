@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
@@ -102,6 +103,11 @@ public class InDataBaseFilmStorage implements FilmStorage {
                              )
             """;
 
+    private static final String DELETE_FILM = """
+            DELETE FROM films f
+            WHERE f.film_id = ?
+            """;
+
     @Override
     public Film addNewFilm(Film film) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -188,6 +194,14 @@ public class InDataBaseFilmStorage implements FilmStorage {
     @Override
     public Collection<Like> getDataField(Long userId) {
         return jdbcTemplate.queryForStream(GET_DATA_FIELD, filmLikeRowMapper, userId).toList();
+    }
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        int filmsDeleted = jdbcTemplate.update(DELETE_FILM, filmId);
+        if (filmsDeleted < 1) {
+            throw new NotFoundException("Фильм не был найден в базе данных");
+        }
     }
 
     private void addNewFilmGenres(Film film) {
