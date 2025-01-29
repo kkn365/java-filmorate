@@ -57,6 +57,7 @@ public class InDataBaseGenreStorage implements GenreStorage {
             WHERE f.film_id = ?
             """;
 
+
     @Override
     public Genre getGenreById(int id) {
         try {

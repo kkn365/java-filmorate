@@ -59,6 +59,10 @@ public class FilmService {
         final MPA filmMpa = MPAMapper.mapToMPA(mpaService.getMPAbyId(mpaId));
         film.setMpa(filmMpa);
 
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден в базе данных");
+        }
+
         final Set<Genre> filmGenres = genreService.getFilmGenresByFilmId(id)
                 .stream()
                 .map(GenreMapper::mapToGenre)
@@ -248,5 +252,9 @@ public class FilmService {
                         .anyMatch(directorDto -> directorDto.getId().equals(directorId)))
                 .sorted(comparator)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public void deleteFilmById(Long filmId) {
+        filmStorage.deleteFilmById(filmId);
     }
 }
