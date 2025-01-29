@@ -209,6 +209,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
         return filmIds.stream()
                 .map(this::getFilmById)
                 .toList();
+
     }
 
     private void addNewFilmGenres(Film film) {
