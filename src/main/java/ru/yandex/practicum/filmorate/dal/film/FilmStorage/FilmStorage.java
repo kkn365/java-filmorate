@@ -21,7 +21,7 @@ public interface FilmStorage {
 
     Film deleteLike(Long filmId, Long userId);
 
-    Collection<Film> getPopularFilms(Integer limit);
+    public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year);
 
     Collection<Like> getDataField(Long userId);
 
