@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.dal.genre.GenreStorage.GenreStorage;
 import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
@@ -65,7 +66,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
             """;
     private static final String DELETE_LIKE = """
             DELETE FROM likes
-            WHERE user_id = ? AND film_id = ?
+            WHERE film_id = ? AND user_id = ?
             """;
     private static final String GET_POPULAR_FILMS = """
             SELECT film_id, name, description, release_date, duration, mpa_id
@@ -104,6 +105,11 @@ public class InDataBaseFilmStorage implements FilmStorage {
                               GROUP BY fl1.user_id
                               HAVING count(fl1.film_id) >= (SELECT count(film_id) FROM user_liked_films) / 2
                              )
+            """;
+
+    private static final String DELETE_FIM = """
+            DELETE FROM films f
+            WHERE f.film_id = ?
             """;
 
     @Override
@@ -216,8 +222,12 @@ public class InDataBaseFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
-        List<Like> userLikes = new ArrayList<>(getDataField(userId));
-        List<Like> friendLikes = new ArrayList<>(getDataField(friendId));
+        String sql = "SELECT * " +
+                "FROM likes " +
+                "WHERE user_id = ? ";
+
+        List<Like> userLikes = jdbcTemplate.query(sql, filmLikeRowMapper, userId).stream().toList();
+        List<Like> friendLikes = jdbcTemplate.query(sql, filmLikeRowMapper, friendId).stream().toList();
 
         Set<Long> friendFilmIds = friendLikes.stream()
                 .map(Like::getFilmId)
@@ -233,6 +243,14 @@ public class InDataBaseFilmStorage implements FilmStorage {
                 .toList();
     }
 
+    @Override
+    public void deleteFilmById(Long filmId) {
+        int filmDeleted = jdbcTemplate.update(DELETE_FIM, filmId);
+        if (filmDeleted < 1) {
+            throw new NotFoundException("Фильм не найден в базе данных");
+        }
+    }
+
     private void addNewFilmGenres(Film film) {
         final Long filmId = film.getId();
         StringBuilder builder = new StringBuilder();
@@ -240,6 +258,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
         for (Integer genreId : film.getGenres().stream().map(Genre::getId).toList()) {
             builder.append("(").append(filmId).append(", ").append(genreId).append("), ");
         }
+
         String sqlQuery = builder.toString().replaceAll(", *$", "");
         jdbcTemplate.execute(sqlQuery);
     }
