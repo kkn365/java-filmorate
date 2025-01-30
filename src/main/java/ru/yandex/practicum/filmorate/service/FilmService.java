@@ -179,7 +179,6 @@ public class FilmService {
                     .get();
             film.getMpa().setName(mpaName);
 
-
             final Set<Genre> genres = allFilmsGenres
                     .stream()
                     .filter(genre -> genre.getFilmId().equals(film.getId()))
