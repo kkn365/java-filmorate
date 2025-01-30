@@ -150,4 +150,8 @@ public class UserService {
 
         return UserMapper.mapToUserDto(user);
     }
+
+    public void deleteUserById(Long userId) {
+        userStorage.deleteUserById(userId);
+    }
 }

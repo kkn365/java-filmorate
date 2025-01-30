@@ -21,7 +21,6 @@ public class FilmController {
     }
 
 
-
     @PostMapping
     public FilmDto createFilm(@Valid @RequestBody FilmDto newFilm) {
         return filmService.addNewFilm(newFilm);
@@ -59,5 +58,11 @@ public class FilmController {
     @GetMapping("/common")
     public Collection<FilmDto> getCommonFilmsWithFriend(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getCommonFilmsWithFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public String deleteFilmById(@PathVariable Long filmId) {
+        filmService.deleteFilmById(filmId);
+        return "Фильм успешно удален";
     }
 }
