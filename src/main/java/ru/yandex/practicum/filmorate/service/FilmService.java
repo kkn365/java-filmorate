@@ -5,15 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.film.FilmStorage.FilmStorage;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dto.FilmGenresDto;
-import ru.yandex.practicum.filmorate.dto.GenreDto;
-import ru.yandex.practicum.filmorate.dto.MpaDto;
+import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.mapper.MPAMapper;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
@@ -31,11 +30,14 @@ public class FilmService {
     private final UserService userService;
     private final MpaService mpaService;
     private final GenreService genreService;
+    private final DirectorService directorService;
 
     public Collection<FilmDto> getFilms() {
         Collection<Film> films = filmStorage.getAllFilms();
         Collection<MpaDto> mpas = mpaService.getAllMPAs();
         Collection<FilmGenresDto> allFilmsGenres = genreService.getAllFilmsGenres();
+        Collection<DirectorFilmsDto> allDirectors = directorService.getAllFilmDirectors();
+
 
         for (Film film : films) {
 
@@ -56,6 +58,16 @@ public class FilmService {
                     .collect(Collectors.toSet());
             film.setGenres(genres);
 
+            final Set<Director> directors = allDirectors
+                    .stream()
+                    .filter(director -> director.getDirectorId().equals(film.getId()))
+                    .map(director -> Director.builder()
+                            .id(director.getDirectorId())
+                            .name(director.getDirectorName())
+                            .build())
+                    .collect(Collectors.toSet());
+            film.setDirectors(directors);
+
         }
 
         return films
@@ -74,7 +86,9 @@ public class FilmService {
         if (film.getGenres() != null) {
 
             final Set<Genre> incomingFilmGenres = film.getGenres();
+            final Set<Director> incomingFilmDirector = film.getDirectors();
             final Collection<GenreDto> currentFilmGenres = genreService.getAllGenres();
+            final Collection<DirectorDto> currentFilmDirector = directorService.getAllDirectors();
 
             final Set<Integer> currentFilmGenresIds = currentFilmGenres
                     .stream()
@@ -86,10 +100,27 @@ public class FilmService {
                     .map(Genre::getId)
                     .collect(Collectors.toSet());
 
+            final Set<Long> currentFilmDirectorsIds = currentFilmDirector
+                    .stream()
+                    .map(DirectorDto::getId)
+                    .collect(Collectors.toSet());
+
+            final Set<Long> incomingFilmDirectorsIds = incomingFilmDirector
+                    .stream()
+                    .map(Director::getId)
+                    .collect(Collectors.toSet());
+
             for (Integer genreId : incomingFilmGenresIds) {
                 if (!currentFilmGenresIds.contains(genreId)) {
                     log.warn("Не найден жанр с id={}", genreId);
                     throw new NotFoundException(String.format("Жанр с id=%d не найден.", genreId));
+                }
+            }
+
+            for (Long directorId : incomingFilmDirectorsIds) {
+                if (!currentFilmDirectorsIds.contains(directorId)) {
+                    log.warn("Не найден режиссер с id={}", directorId);
+                    throw new NotFoundException(String.format("Режиссер с id=%d не найден.", directorId));
                 }
             }
 
@@ -153,6 +184,12 @@ public class FilmService {
         final int mpaId = film.getMpa().getId();
         final MPA filmMpa = MPAMapper.mapToMPA(mpaService.getMPAbyId(mpaId));
         film.setMpa(filmMpa);
+
+        final Set<Director> filmDirectors = directorService.getFilmDirectorByFilmId(id)
+                .stream()
+                .map(DirectorMapper::mapToDirector)
+                .collect(Collectors.toSet());
+        film.setDirectors(filmDirectors);
 
         return FilmMapper.mapToFilmDto(film);
     }
