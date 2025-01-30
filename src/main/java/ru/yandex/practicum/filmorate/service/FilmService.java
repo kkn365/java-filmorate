@@ -139,6 +139,10 @@ public class FilmService {
 
         Film film = filmStorage.getFilmById(id);
 
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден в базе данных");
+        }
+
         final Set<Genre> filmGenres = genreService.getFilmGenresByFilmId(id)
                 .stream()
                 .map(GenreMapper::mapToGenre)
@@ -194,5 +198,9 @@ public class FilmService {
                 .stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteFilmById(Long filmId) {
+        filmStorage.deleteFilmById(filmId);
     }
 }

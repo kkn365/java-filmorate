@@ -113,4 +113,8 @@ public class UserService {
         log.info(message);
         return message;
     }
+
+    public void deleteUserById(Long userId) {
+        userStorage.deleteUserById(userId);
+    }
 }

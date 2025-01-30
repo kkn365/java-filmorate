@@ -2,23 +2,11 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
-import ru.yandex.practicum.filmorate.model.ResponseMessage;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -29,11 +17,11 @@ public class FilmController {
 
     @GetMapping
     public Collection<FilmDto> getAll() {
-        return filmService.getAllFilms();
+        return filmService.getFilms();
     }
 
+
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public FilmDto createFilm(@Valid @RequestBody FilmDto newFilm) {
         return filmService.addNewFilm(newFilm);
     }
@@ -44,13 +32,13 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public ResponseMessage putLike(@PathVariable Long id, @PathVariable Long userId) {
-        return new ResponseMessage(filmService.putLike(id, userId));
+    public FilmDto putLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.putLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public ResponseMessage deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        return new ResponseMessage(filmService.deleteLike(id, userId));
+    public FilmDto deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
@@ -73,23 +61,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}")
-    public ResponseMessage deleteFilmById(@PathVariable Long filmId) {
-        return new ResponseMessage(filmService.deleteFilmById(filmId));
-    }
-
-    @GetMapping("/search")
-    public Collection<FilmDto> searchFilms(
-            @RequestParam String query,
-            @RequestParam List<String> by
-    ) {
-        return filmService.searchFilms(query, by);
-    }
-
-    @GetMapping("/director/{directorId}")
-    public Collection<FilmDto> getFilmsByDirectors(
-            @PathVariable Long directorId,
-            @RequestParam String sortBy
-    ) {
-        return filmService.getFilmsByDirectors(directorId, sortBy);
+    public String deleteFilmById(@PathVariable Long filmId) {
+        filmService.deleteFilmById(filmId);
+        return "Фильм успешно удален";
     }
 }
