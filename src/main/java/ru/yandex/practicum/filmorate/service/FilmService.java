@@ -47,6 +47,13 @@ public class FilmService {
             log.warn(warnMessage);
             throw new NotFoundException(warnMessage);
         }
+        
+    public Collection<FilmDto> getFilms() {
+        Collection<Film> films = filmStorage.getAllFilms();
+        Collection<MpaDto> mpas = mpaService.getAllMPAs();
+        Collection<FilmGenresDto> allFilmsGenres = genreService.getAllFilmsGenres();
+        Collection<DirectorFilmsDto> allDirectors = directorService.getAllFilmDirectors();
+
 
         final int mpaId = film.getMpa().getId();
         final MPA filmMpa = MPAMapper.mapToMPA(mpaService.getMPAbyId(mpaId));
@@ -135,6 +142,7 @@ public class FilmService {
 
     public FilmDto updateFilmData(FilmDto film) {
         final Long id = film.getId();
+
         if (id == null) {
             log.warn("Не указан id в теле запроса: {}", film);
             throw new ValidationException("Должен быть указан id фильма.");
