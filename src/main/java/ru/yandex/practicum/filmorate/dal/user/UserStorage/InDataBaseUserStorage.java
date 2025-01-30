@@ -166,5 +166,4 @@ public class InDataBaseUserStorage implements UserStorage {
             return null;
         }
     }
-
 }

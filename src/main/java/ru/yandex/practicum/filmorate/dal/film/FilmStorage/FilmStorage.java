@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dal.film.FilmStorage;
 
-import ru.yandex.practicum.filmorate.dto.LikeDto;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Like;
 
 import java.util.Collection;
 
@@ -17,10 +17,13 @@ public interface FilmStorage {
 
     Film putLike(Long filmId, Long userId);
 
-    LikeDto getLike(Long filmId, Long userId);
+    Like getLike(Long filmId, Long userId);
 
     Film deleteLike(Long filmId, Long userId);
 
-    Collection<Film> getPopularFilms(Integer limit);
+    public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year);
 
+    Collection<Like> getDataField(Long userId);
+
+    Collection<Film> getCommonFilmsWithFriend(Long userId, Long friendId);
 }

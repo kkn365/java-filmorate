@@ -1,7 +1,10 @@
 server.port: 8080
 
 filmorate:
-  default.popular-list-count: 10
+  default:
+    popular-list-count: 10
+    film-mark: 10.0
+    minimum-mark-for-recommendation: 6.0
 
 logging:
   level:
@@ -17,6 +20,9 @@ spring:
     password: password
     hikari:
       maximum-pool-size: 1500
+    jdbc:
+      template:
+        query-timeout: 30
   h2:
     console:
       enabled: false

@@ -20,6 +20,8 @@ public class FilmController {
         return filmService.getFilms();
     }
 
+
+
     @PostMapping
     public FilmDto createFilm(@Valid @RequestBody FilmDto newFilm) {
         return filmService.addNewFilm(newFilm);
@@ -42,9 +44,11 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<FilmDto> getPopular(
-            @RequestParam(defaultValue = "${filmorate.default.popular-list-count}") Integer count
-    ) {
-        return filmService.getPopular(count);
+            @RequestParam(name = "count", defaultValue = "10") Integer count,
+            @RequestParam(name = "genreId", required = false, defaultValue = "0") Integer genreId,
+            @RequestParam(name = "year", required = false, defaultValue = "0") Integer year) {
+
+        return filmService.getPopular(count, genreId, year);
     }
 
     @GetMapping("/{id}")
@@ -52,4 +56,8 @@ public class FilmController {
         return filmService.getFilmById(id);
     }
 
+    @GetMapping("/common")
+    public Collection<FilmDto> getCommonFilmsWithFriend(@RequestParam Long userId, @RequestParam Long friendId) {
+        return filmService.getCommonFilmsWithFriend(userId, friendId);
+    }
 }
