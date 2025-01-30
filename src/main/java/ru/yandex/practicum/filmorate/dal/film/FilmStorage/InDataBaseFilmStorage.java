@@ -218,6 +218,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
                 .map(Like::getFilmId)
                 .filter(friendFilmIds::contains)
                 .collect(Collectors.toSet());
+
         return filmIds.stream()
                 .map(this::getFilmById)
                 .toList();
