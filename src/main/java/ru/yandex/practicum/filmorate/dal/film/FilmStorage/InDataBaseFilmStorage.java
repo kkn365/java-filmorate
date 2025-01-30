@@ -221,7 +221,6 @@ public class InDataBaseFilmStorage implements FilmStorage {
         return filmIds.stream()
                 .map(this::getFilmById)
                 .toList();
-
     }
 
     @Override
