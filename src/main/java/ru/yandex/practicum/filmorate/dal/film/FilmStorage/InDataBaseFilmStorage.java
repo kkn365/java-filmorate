@@ -184,30 +184,30 @@ public class InDataBaseFilmStorage implements FilmStorage {
         return getFilmById(filmId);
     }
 
-     @Override
-     public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year) {
+    @Override
+    public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year) {
         List<Object> params = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT f.* FROM films AS f WHERE true");
 
-            if (genreId != null && genreId > 0) {
-                sql.append(" AND f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)");
-                params.add(genreId);
-            }
-
-            if (year != null && year > 0) {
-                sql.append(" AND YEAR(f.release_date) = ?");
-                params.add(year);
-            }
-
-            sql.append(" ORDER BY f.rank DESC LIMIT ?");
-            params.add(limit);
-
-            List<Film> films = jdbcTemplate.query(sql.toString(), params.toArray(), filmRowMapper);
-
-            films.forEach(film -> film.setGenres(new HashSet<>(genreStorage.getFilmGenres(film.getId()))));
-
-            return films;
+        if (genreId != null && genreId > 0) {
+            sql.append(" AND f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)");
+            params.add(genreId);
         }
+
+        if (year != null && year > 0) {
+            sql.append(" AND YEAR(f.release_date) = ?");
+            params.add(year);
+        }
+
+        sql.append(" ORDER BY f.rank DESC LIMIT ?");
+        params.add(limit);
+
+        List<Film> films = jdbcTemplate.query(sql.toString(), params.toArray(), filmRowMapper);
+
+        films.forEach(film -> film.setGenres(new HashSet<>(genreStorage.getFilmGenres(film.getId()))));
+
+        return films;
+    }
 
     @Override
     public Collection<Like> getDataField(Long userId) {

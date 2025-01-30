@@ -21,7 +21,6 @@ public class FilmController {
     }
 
 
-
     @PostMapping
     public FilmDto createFilm(@Valid @RequestBody FilmDto newFilm) {
         return filmService.addNewFilm(newFilm);
