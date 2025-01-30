@@ -47,7 +47,7 @@ public class FilmService {
             log.warn(warnMessage);
             throw new NotFoundException(warnMessage);
         }
-        
+
     public Collection<FilmDto> getFilms() {
         Collection<Film> films = filmStorage.getAllFilms();
         Collection<MpaDto> mpas = mpaService.getAllMPAs();
