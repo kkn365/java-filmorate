@@ -63,7 +63,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
             """;
     private static final String DELETE_LIKE = """
             DELETE FROM likes
-            WHERE user_id = ? AND film_id = ?
+            WHERE film_id = ? AND user_id = ?
             """;
     private static final String GET_POPULAR_FILMS = """
             SELECT film_id, name, description, release_date, duration, mpa_id
@@ -222,6 +222,7 @@ public class InDataBaseFilmStorage implements FilmStorage {
         for (Integer genreId : film.getGenres().stream().map(Genre::getId).toList()) {
             builder.append("(").append(filmId).append(", ").append(genreId).append("), ");
         }
+
         String sqlQuery = builder.toString().replaceAll(", *$", "");
         jdbcTemplate.execute(sqlQuery);
     }
