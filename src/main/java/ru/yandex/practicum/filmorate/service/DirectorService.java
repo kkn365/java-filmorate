@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,6 +55,10 @@ public class DirectorService {
 
     public void deleteDirector(Long id) {
         directorStorage.deleteById(id);
+    }
+
+    public void addDirectors(Long filmId, List<Long> director) {
+        directorStorage.addDirectors(filmId, director);
     }
 
     public Collection<DirectorFilmsDto> getAllFilmDirectors() {

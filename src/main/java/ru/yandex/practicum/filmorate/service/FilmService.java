@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.mapper.MPAMapper;
 import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,50 +83,45 @@ public class FilmService {
         }
 
         if (film.getGenres() != null) {
-
             final Set<Genre> incomingFilmGenres = film.getGenres();
-            final Set<Director> incomingFilmDirector = film.getDirectors();
             final Collection<GenreDto> currentFilmGenres = genreService.getAllGenres();
-            final Collection<DirectorDto> currentFilmDirector = directorService.getAllDirectors();
-
             final Set<Integer> currentFilmGenresIds = currentFilmGenres
                     .stream()
                     .map(GenreDto::getId)
                     .collect(Collectors.toSet());
-
             final Set<Integer> incomingFilmGenresIds = incomingFilmGenres
                     .stream()
                     .map(Genre::getId)
                     .collect(Collectors.toSet());
-
-            final Set<Long> currentFilmDirectorsIds = currentFilmDirector
-                    .stream()
-                    .map(DirectorDto::getId)
-                    .collect(Collectors.toSet());
-
-            final Set<Long> incomingFilmDirectorsIds = incomingFilmDirector
-                    .stream()
-                    .map(Director::getId)
-                    .collect(Collectors.toSet());
-
             for (Integer genreId : incomingFilmGenresIds) {
                 if (!currentFilmGenresIds.contains(genreId)) {
                     log.warn("Не найден жанр с id={}", genreId);
                     throw new NotFoundException(String.format("Жанр с id=%d не найден.", genreId));
                 }
             }
+        }
 
+        if (film.getDirectors() != null) {
+            final Set<Director> incomingFilmDirector = film.getDirectors();
+            final Collection<DirectorDto> currentFilmDirector = directorService.getAllDirectors();
+            final Set<Long> currentFilmDirectorsIds = currentFilmDirector
+                    .stream()
+                    .map(DirectorDto::getId)
+                    .collect(Collectors.toSet());
+            final Set<Long> incomingFilmDirectorsIds = incomingFilmDirector
+                    .stream()
+                    .map(Director::getId)
+                    .collect(Collectors.toSet());
             for (Long directorId : incomingFilmDirectorsIds) {
                 if (!currentFilmDirectorsIds.contains(directorId)) {
                     log.warn("Не найден режиссер с id={}", directorId);
                     throw new NotFoundException(String.format("Режиссер с id=%d не найден.", directorId));
                 }
             }
-
+            directorService.addDirectors(film.getId(), film.getDirectors().stream().map(Director::getId).toList());
         }
 
         Film newFilm = filmStorage.addNewFilm(FilmMapper.mapToFilm(film));
-
         return FilmMapper.mapToFilmDto(newFilm);
     }
 
@@ -143,6 +139,20 @@ public class FilmService {
         }
 
         Film updatedFilm = filmStorage.updateCurrentFilm(FilmMapper.mapToFilm(film));
+
+        if (film.getDirectors() != null) {
+            final List<Long> directorsIds = film.getDirectors().stream()
+                    .map(Director::getId)
+                    .filter(dirId -> directorService.getDirectorById(dirId) != null)
+                    .toList();
+            directorService.addDirectors(film.getId(), directorsIds);
+
+            final Set<Director> directors = film.getDirectors().stream()
+                    .filter(dir -> directorService.getDirectorById(dir.getId()) != null)
+                    .collect(Collectors.toSet());
+            updatedFilm.setDirectors(directors);
+        }
+
 
         return FilmMapper.mapToFilmDto(updatedFilm);
     }

@@ -23,15 +23,15 @@ import java.util.List;
 public class InDataBaseDirectorStorage implements DirectorStorage {
 
 
-    private static final String FIND_ALL_QUERY = "SELECT * FROM DIRECTORS"; //список всех режиссеров
+    private static final String FIND_ALL_QUERY = "SELECT * FROM DIRECTORS ORDER BY DIRECTOR_ID"; //список всех режиссеров
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM DIRECTORS WHERE DIRECTOR_ID = ?"; //получение режиссера по айди
     private static final String FIND_DIRECTORS_BY_FILM = "SELECT d.DIRECTOR_ID, d.DIRECTOR_NAME FROM DIRECTORS AS" +
-            " d LEFT JOIN FILMS_DIRECTORS fd ON d.DIRECTOR_ID = fd.DIRECTOR_ID WHERE fd.FILM_ID = ?";
+            " d LEFT JOIN DIRECTOR_FILMS fd ON d.DIRECTOR_ID = fd.DIRECTOR_ID WHERE fd.FILM_ID = ? ORDER BY d.DIRECTOR_ID";
     private static final String INSERT_QUERY = "INSERT INTO DIRECTORS (DIRECTOR_NAME) VALUES (?)"; //создание режиссера
     private static final String UPDATE_QUERY = "UPDATE DIRECTORS SET DIRECTOR_NAME = ? WHERE DIRECTOR_ID = ?"; // изменение режиссера
     private static final String DELETE_ALL_QUERY = "DELETE FROM DIRECTORS"; //удалить режиссера
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM DIRECTORS WHERE DIRECTOR_ID = ?"; //удалить режиссера по айди фильма
-    private static final String INSERT_FILM_DIRECTORS_QUERY = "INSERT INTO FILMS_DIRECTORS (FILM_ID, DIRECTOR_ID)" //Добавить связь режиссера и фильма
+    private static final String INSERT_FILM_DIRECTORS_QUERY = "INSERT INTO DIRECTOR_FILMS (FILM_ID, DIRECTOR_ID)" //Добавить связь режиссера и фильма
             + "VALUES (?, ?) ";
     private static final String GET_ALL_FILMS_DIRECTORS = "SELECT df.film_id, df.director_id, d.director_name" +
             " FROM director_films df JOIN directors d ON df.director_id = d.director_id"; //получение всех фильмов и связанных с ними режиссеров
