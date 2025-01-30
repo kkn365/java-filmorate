@@ -7,9 +7,7 @@ import java.util.Collection;
 
 @Component
 public interface MPAStorage {
-
     MPA getMpaById(int id);
 
     Collection<MPA> getAllMpas();
-
 }

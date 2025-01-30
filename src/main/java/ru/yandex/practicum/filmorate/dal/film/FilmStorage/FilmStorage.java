@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.Like;
 import java.util.Collection;
 
 public interface FilmStorage {
-
     Film addNewFilm(Film film);
 
     Film updateCurrentFilm(Film film);
@@ -21,7 +20,7 @@ public interface FilmStorage {
 
     Film deleteLike(Long filmId, Long userId);
 
-    public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year);
+    Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year);
 
     Collection<Like> getDataField(Long userId);
 
