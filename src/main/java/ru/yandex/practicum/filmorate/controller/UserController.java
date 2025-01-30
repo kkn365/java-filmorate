@@ -58,6 +58,11 @@ public class UserController {
         return recommendationService.getRecommendedFilmsList(id);
     }
 
+    @GetMapping("/{id}")
+    public UserDto getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
     @DeleteMapping("/{userId}")
     public String deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
