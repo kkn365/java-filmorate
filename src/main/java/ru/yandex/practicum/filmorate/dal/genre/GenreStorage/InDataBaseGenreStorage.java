@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.dto.FilmGenresDto;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -66,7 +67,7 @@ public class InDataBaseGenreStorage implements GenreStorage {
 
     @Override
     public Collection<Genre> getFilmGenres(Long filmId) {
-        return jdbcTemplate.queryForStream(GET_FILM_GENRES, genreRowMapper, filmId).toList();
+        return jdbcTemplate.queryForStream(GET_FILM_GENRES, genreRowMapper, filmId).collect(Collectors.toSet());
     }
 
 }
