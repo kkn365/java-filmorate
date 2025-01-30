@@ -194,8 +194,12 @@ public class InDataBaseFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
-        List<Like> userLikes = new ArrayList<>(getDataField(userId));
-        List<Like> friendLikes = new ArrayList<>(getDataField(friendId));
+        String sql = "SELECT * " +
+                "FROM likes " +
+                "WHERE user_id = ? ";
+
+        List<Like> userLikes = jdbcTemplate.query(sql, filmLikeRowMapper, userId).stream().toList();
+        List<Like> friendLikes = jdbcTemplate.query(sql, filmLikeRowMapper, friendId).stream().toList();
 
         Set<Long> friendFilmIds = friendLikes.stream()
                 .map(Like::getFilmId)
