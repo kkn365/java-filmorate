@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.dal.genre.GenreStorage.GenreStorage;
 import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
@@ -106,6 +107,11 @@ public class InDataBaseFilmStorage implements FilmStorage {
                              )
             """;
 
+    private static final String DELETE_FIM = """
+            DELETE FROM films f
+            WHERE f.film_id = ?
+            """;
+
     @Override
     public Film addNewFilm(Film film) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -184,30 +190,30 @@ public class InDataBaseFilmStorage implements FilmStorage {
         return getFilmById(filmId);
     }
 
-     @Override
-     public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year) {
+    @Override
+    public Collection<Film> getPopularFilms(Integer limit, Integer genreId, Integer year) {
         List<Object> params = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT f.* FROM films AS f WHERE true");
 
-            if (genreId != null && genreId > 0) {
-                sql.append(" AND f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)");
-                params.add(genreId);
-            }
-
-            if (year != null && year > 0) {
-                sql.append(" AND YEAR(f.release_date) = ?");
-                params.add(year);
-            }
-
-            sql.append(" ORDER BY f.rank DESC LIMIT ?");
-            params.add(limit);
-
-            List<Film> films = jdbcTemplate.query(sql.toString(), params.toArray(), filmRowMapper);
-
-            films.forEach(film -> film.setGenres(new HashSet<>(genreStorage.getFilmGenres(film.getId()))));
-
-            return films;
+        if (genreId != null && genreId > 0) {
+            sql.append(" AND f.FILM_ID IN (SELECT FILMS_GENRES.FILM_ID FROM FILMS_GENRES WHERE GENRE_ID = ?)");
+            params.add(genreId);
         }
+
+        if (year != null && year > 0) {
+            sql.append(" AND YEAR(f.release_date) = ?");
+            params.add(year);
+        }
+
+        sql.append(" ORDER BY f.rank DESC LIMIT ?");
+        params.add(limit);
+
+        List<Film> films = jdbcTemplate.query(sql.toString(), params.toArray(), filmRowMapper);
+
+        films.forEach(film -> film.setGenres(new HashSet<>(genreStorage.getFilmGenres(film.getId()))));
+
+        return films;
+    }
 
     @Override
     public Collection<Like> getDataField(Long userId) {
@@ -235,6 +241,14 @@ public class InDataBaseFilmStorage implements FilmStorage {
         return filmIds.stream()
                 .map(this::getFilmById)
                 .toList();
+    }
+
+    @Override
+    public void deleteFilmById(Long filmId) {
+        int filmDeleted = jdbcTemplate.update(DELETE_FIM, filmId);
+        if (filmDeleted < 1) {
+            throw new NotFoundException("Фильм не найден в базе данных");
+        }
     }
 
     private void addNewFilmGenres(Film film) {
