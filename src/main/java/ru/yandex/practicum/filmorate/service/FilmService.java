@@ -115,13 +115,24 @@ public class FilmService {
     }
 
     public FilmDto addNewFilm(FilmDto film) {
+        final Integer mpaId = film.getMpa().getId();
+        if (mpaId != null) {
+            mpaService.getMPAbyId(mpaId);
+        }
         FilmDto newFilm = FilmMapper.mapToFilmDto(filmStorage.addNewFilm(FilmMapper.mapToFilm(film)));
         if (!newFilm.getGenres().isEmpty()) {
+            final Collection<GenreDto> currentGenres = genreService.getAllGenres();
             final Set<Integer> incomingGenresIds = newFilm.getGenres()
                     .stream()
                     .map(GenreDto::getId)
                     .collect(Collectors.toSet());
-            final Set<GenreDto> incomingGenres = genreService.getAllGenres()
+            for (Integer genreId : incomingGenresIds) {
+                if (!(currentGenres.stream().map(GenreDto::getId).toList()).contains(genreId)) {
+                    log.warn("Не найден жанр с id={}", genreId);
+                    throw new NotFoundException(String.format("Жанр с id=%d не найден.", genreId));
+                }
+            }
+            final Set<GenreDto> incomingGenres = currentGenres
                     .stream()
                     .filter(genre -> incomingGenresIds.contains(genre.getId()))
                     .collect(Collectors.toSet());
@@ -129,11 +140,18 @@ public class FilmService {
             genreService.addGenresToFilm(newFilm);
         }
         if (!newFilm.getDirectors().isEmpty()) {
+            final Collection<DirectorDto> currentDirectors = directorService.getAllDirectors();
             final Set<Long> incomingDirectorsIds = newFilm.getDirectors()
                     .stream()
                     .map(DirectorDto::getId)
                     .collect(Collectors.toSet());
-            final Set<DirectorDto> incomingDirectors = directorService.getAllDirectors()
+            for (Long directorId : incomingDirectorsIds) {
+                if (!(currentDirectors.stream().map(DirectorDto::getId).toList()).contains(directorId)) {
+                    log.warn("Не найден режиссёр с id={}", directorId);
+                    throw new NotFoundException(String.format("Режиссёр с id=%d не найден.", directorId));
+                }
+            }
+            final Set<DirectorDto> incomingDirectors = currentDirectors
                     .stream()
                     .filter(director -> incomingDirectorsIds.contains(director.getId()))
                     .collect(Collectors.toSet());
@@ -188,10 +206,18 @@ public class FilmService {
         final Set<Long> popularFilmsIds = filmStorage.getPopularFilms(count, genreId, year).stream()
                 .map(Film::getId)
                 .collect(Collectors.toSet());
+        // В тестах add-search ожидается сортировка по убыванию популярности
+        return getAllFilms().stream()
+                .filter(film -> popularFilmsIds.contains(film.getId()))
+                .sorted(Comparator.comparing(FilmDto::getLiked).reversed())
+                .toList();
+/*
+        // В тестах develop ожидается сортировка по id.
         return getAllFilms().stream()
                 .filter(film -> popularFilmsIds.contains(film.getId()))
                 .sorted(Comparator.comparing(FilmDto::getId))
                 .toList();
+*/
     }
 
     public Collection<Like> getDataField(Long userId) {
