@@ -19,8 +19,8 @@ public class ReviewService {
         return reviewStorage.getReviewById(reviewId);
     }
 
-    public List<Review> getReviewByFilm(Long film_id, Integer count) {
-        return reviewStorage.getReviewsByFilm(film_id, count);
+    public List<Review> getReviewByFilm(Long filmId, Integer count) {
+        return reviewStorage.getReviewsByFilm(filmId, count);
     }
 
     public Review addReview(Review review) {
