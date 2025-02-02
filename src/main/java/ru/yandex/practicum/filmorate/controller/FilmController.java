@@ -32,7 +32,6 @@ public class FilmController {
         return filmService.getAllFilms();
     }
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FilmDto createFilm(@Valid @RequestBody FilmDto newFilm) {
