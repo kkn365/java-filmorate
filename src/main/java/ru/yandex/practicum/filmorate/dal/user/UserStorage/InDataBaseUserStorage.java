@@ -90,6 +90,27 @@ public class InDataBaseUserStorage implements UserStorage {
             WHERE f.film_id IN (SELECT l.film_id FROM likes l WHERE l.user_id = ?)
             """;
 
+    private static final String UPDATE_REVIEW_RATING = """
+            UPDATE reviews r
+            SET r.useful = r.useful - (
+                SELECT COUNT(*) FROM review_marks rm
+                WHERE rm.review_id = r.review_id
+                AND rm.user_id = ?
+                AND rm.is_useful = TRUE
+            ) + (
+                SELECT COUNT(*) FROM review_marks rm
+                WHERE rm.review_id = r.review_id
+                AND rm.user_id = ?
+                AND rm.is_useful = FALSE
+            )
+            WHERE EXISTS (
+                SELECT 1 FROM review_marks rm
+                WHERE rm.review_id = r.review_id
+                AND rm.user_id = ?
+            );
+            """;
+
+
     @Override
     public User addNewUser(User user) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -185,6 +206,7 @@ public class InDataBaseUserStorage implements UserStorage {
             throw new NotFoundException("Пользователь не найден в базе данных");
         }
         jdbcTemplate.update(DOWNGRADE_FILM_RATING, userId);
+        jdbcTemplate.update(UPDATE_REVIEW_RATING, userId, userId, userId);
         jdbcTemplate.update(DELETE_USER, userId);
     }
 }
