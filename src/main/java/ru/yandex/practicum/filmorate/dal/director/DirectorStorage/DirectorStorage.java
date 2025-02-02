@@ -9,7 +9,6 @@ import java.util.List;
 
 
 public interface DirectorStorage {
-
     Collection<Director> getAll();
 
     Director getDirectorById(Long id);
