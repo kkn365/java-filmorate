@@ -20,7 +20,10 @@ public class ReviewMarksDbStorage implements ReviewMarksStorage {
             WHERE review_id = :review_id
             """;
     private static final String PUT_A_MARK = """
-            MERGE INTO review_marks (review_id, user_id, is_useful) KEY (review_id, user_id) VALUES (:review_id, :user_id, :is_useful)
+            MERGE INTO review_marks
+             (review_id, user_id, is_useful)
+              KEY (review_id, user_id)
+               VALUES (:review_id, :user_id, :is_useful)
             """;
     private static final String DELETE_A_MARK = """
             DELETE
