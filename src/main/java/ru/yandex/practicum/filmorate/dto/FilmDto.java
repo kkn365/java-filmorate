@@ -6,8 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.dto.annotation.MinimumFilmReleaseDate;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.time.LocalDate;
@@ -25,7 +23,8 @@ public class FilmDto {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
+    private Long liked;
     private MPA mpa;
-    private Set<Genre> genres;
-    private Set<Director> directors;
+    private Set<GenreDto> genres;
+    private Set<DirectorDto> directors;
 }

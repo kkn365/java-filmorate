@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.director.mappers.DirectorFilmsRowMapper;
@@ -22,7 +22,6 @@ import java.util.List;
 @Slf4j
 public class InDataBaseDirectorStorage implements DirectorStorage {
 
-
     private static final String FIND_ALL_QUERY = "SELECT * FROM DIRECTORS ORDER BY DIRECTOR_ID"; //список всех режиссеров
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM DIRECTORS WHERE DIRECTOR_ID = ?"; //получение режиссера по айди
     private static final String FIND_DIRECTORS_BY_FILM = "SELECT d.DIRECTOR_ID, d.DIRECTOR_NAME FROM DIRECTORS AS" +
@@ -35,20 +34,21 @@ public class InDataBaseDirectorStorage implements DirectorStorage {
             + "VALUES (?, ?) ";
     private static final String GET_ALL_FILMS_DIRECTORS = "SELECT df.film_id, df.director_id, d.director_name" +
             " FROM director_films df JOIN directors d ON df.director_id = d.director_id"; //получение всех фильмов и связанных с ними режиссеров
+    private static final String DELETE_DIRECTORS_BY_FILM_ID = "DELETE FROM director_films df WHERE df.film_id = ? ";
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcOperations jdbcOperations;
     private final DirectorRowMapper directorRowMapper;
     private final DirectorFilmsRowMapper directorFilmsRowMapper;
 
     @Override
     public Collection<Director> getAll() {
-        return jdbcTemplate.queryForStream(FIND_ALL_QUERY, directorRowMapper).toList();
+        return jdbcOperations.queryForStream(FIND_ALL_QUERY, directorRowMapper).toList();
     }
 
     @Override
     public Director getDirectorById(Long id) {
         try {
-            return jdbcTemplate.queryForObject(FIND_BY_ID_QUERY, directorRowMapper, id);
+            return jdbcOperations.queryForObject(FIND_BY_ID_QUERY, directorRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Режиссер с id={} не найден", id);
             return null;
@@ -57,14 +57,14 @@ public class InDataBaseDirectorStorage implements DirectorStorage {
 
     @Override
     public Collection<Director> findDirectorsByFilmId(Long filmId) {
-        return jdbcTemplate.queryForStream(FIND_DIRECTORS_BY_FILM,
+        return jdbcOperations.queryForStream(FIND_DIRECTORS_BY_FILM,
                 directorRowMapper, filmId).toList();
     }
 
     @Override
     public Director create(Director director) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
+        jdbcOperations.update(con -> {
             PreparedStatement ps = con
                     .prepareStatement(INSERT_QUERY, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, director.getName());
@@ -83,23 +83,23 @@ public class InDataBaseDirectorStorage implements DirectorStorage {
 
     @Override
     public Director update(Director director) {
-        jdbcTemplate.update(UPDATE_QUERY, director.getName(), director.getId());
+        jdbcOperations.update(UPDATE_QUERY, director.getName(), director.getId());
         return getDirectorById(director.getId());
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL_QUERY);
+        jdbcOperations.update(DELETE_ALL_QUERY);
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
+        jdbcOperations.update(DELETE_BY_ID_QUERY, id);
     }
 
     @Override
     public void addDirectors(Long filmId, List<Long> director) {
-        jdbcTemplate.batchUpdate(INSERT_FILM_DIRECTORS_QUERY, new BatchPreparedStatementSetter() {
+        jdbcOperations.batchUpdate(INSERT_FILM_DIRECTORS_QUERY, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setLong(1, filmId); //
@@ -115,7 +115,11 @@ public class InDataBaseDirectorStorage implements DirectorStorage {
 
     @Override
     public Collection<DirectorFilmsDto> getAllFilmsDirector() {
-        return jdbcTemplate.queryForStream(GET_ALL_FILMS_DIRECTORS, directorFilmsRowMapper).toList();
+        return jdbcOperations.queryForStream(GET_ALL_FILMS_DIRECTORS, directorFilmsRowMapper).toList();
     }
 
+    @Override
+    public void deleteFilmDirectorsByFilmId(Long id) {
+        jdbcOperations.update(DELETE_DIRECTORS_BY_FILM_ID, id);
+    }
 }
