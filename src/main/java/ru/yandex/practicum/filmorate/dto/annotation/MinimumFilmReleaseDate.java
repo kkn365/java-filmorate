@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.dto.annotation;
 
 import jakarta.validation.Constraint;
-import jakarta.validation.constraints.Past;
 import ru.yandex.practicum.filmorate.dto.validator.MinimumDateValidator;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MinimumDateValidator.class)
-@Past
 public @interface MinimumFilmReleaseDate {
 
     String MIN_RELEASE_DATE = "1895-12-28";

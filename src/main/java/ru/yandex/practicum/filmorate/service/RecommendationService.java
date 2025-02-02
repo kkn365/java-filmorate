@@ -63,7 +63,7 @@ public class RecommendationService {
         buildDifferencesMatrix(inputData);
         predict(inputData, likeDataField);
 
-        final Collection<FilmDto> allFilms = filmService.getFilms();
+        final Collection<FilmDto> allFilms = filmService.getAllFilms();
         Collection<Long> recommendedFilmIds = new ArrayList<>();
 
         for (Map.Entry<Long, Double> filmId : outputData.get(userId).entrySet()) {
