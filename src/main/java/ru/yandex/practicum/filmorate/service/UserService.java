@@ -76,6 +76,10 @@ public class UserService {
     public String deleteFriend(Long userId, Long friendId) {
         getUserById(userId);
         getUserById(friendId);
+/*
+        Тесты "Not friend remove" и "Friend reciprocity" ждут код 200 даже если пользователи не друзья.
+        Оставим это пока здесь, на случай если тесты поменяют
+
         final Long friendshipId = userStorage.getFriendShipId(userId, friendId);
         if (friendshipId == null) {
             final String message = String.format("Пользователь с id=%d не является другом пользователя с id=%d.",
@@ -85,6 +89,8 @@ public class UserService {
         } else {
             userStorage.deleteFriend(userId, friendId);
         }
+*/
+        userStorage.deleteFriend(userId, friendId);
         final String message = String.format("Удалена дружба пользователя id=%d с пользователем id=%d.",
                 userId, friendId);
         log.info(message);
