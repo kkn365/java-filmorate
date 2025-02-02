@@ -94,7 +94,7 @@ public class ReviewDbStorage implements ReviewStorage {
         try {
             return jdbcTemplate.query(GET_REVIEW_BY_ID, reviewMapper, reviewId).getFirst();
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new NotFoundException("Отзыв не найден в базе данных");
         }
     }
 

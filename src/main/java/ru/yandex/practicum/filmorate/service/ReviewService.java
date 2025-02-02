@@ -2,8 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.film.FilmStorage.FilmStorage;
 import ru.yandex.practicum.filmorate.dal.review.reviewMarks.ReviewMarksStorage;
 import ru.yandex.practicum.filmorate.dal.review.reviewStorage.ReviewStorage;
+import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;
@@ -14,6 +17,8 @@ public class ReviewService {
 
     private final ReviewStorage reviewStorage;
     private final ReviewMarksStorage reviewMarksStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     public Review getReviewById(Long reviewId) {
         return reviewStorage.getReviewById(reviewId);
@@ -24,10 +29,12 @@ public class ReviewService {
     }
 
     public Review addReview(Review review) {
+        checkUserFilmId(review);
         return reviewStorage.addReview(review);
     }
 
     public Review updateReview(Review review) {
+        checkUserFilmId(review);
         return reviewStorage.updateReview(review);
     }
 
@@ -49,5 +56,14 @@ public class ReviewService {
 
     public Review removeDislike(Long reviewId, Long userId) {
         return reviewMarksStorage.removeDislike(reviewId, userId);
+    }
+
+    private void checkUserFilmId(Review review) {
+        if (userStorage.getUserById(review.getUserId()) == null) {
+            throw new NotFoundException("Пользователь не найден в базе данных");
+        }
+        if (filmStorage.getFilmById(review.getFilmId()) == null) {
+            throw new NotFoundException("Фильм не найден в базе данных");
+        }
     }
 }
