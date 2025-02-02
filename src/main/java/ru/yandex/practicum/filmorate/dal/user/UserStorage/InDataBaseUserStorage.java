@@ -202,8 +202,8 @@ public class InDataBaseUserStorage implements UserStorage {
         if (getUserById(userId) == null) {
             throw new NotFoundException("Пользователь не найден в базе данных");
         }
-        jdbcTemplate.update(DOWNGRADE_FILM_RATING, userId);
-        jdbcTemplate.update(UPDATE_REVIEW_RATING, userId, userId, userId);
-        jdbcTemplate.update(DELETE_USER, userId);
+        jdbcOperations.update(DOWNGRADE_FILM_RATING, userId);
+        jdbcOperations.update(UPDATE_REVIEW_RATING, userId, userId, userId);
+        jdbcOperations.update(DELETE_USER, userId);
     }
 }
