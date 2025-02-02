@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.dal.review.reviewStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -91,11 +90,11 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review getReviewById(Long reviewId) {
-        try {
-            return jdbcTemplate.query(GET_REVIEW_BY_ID, reviewMapper, reviewId).getFirst();
-        } catch (EmptyResultDataAccessException e) {
+        List<Review> review = jdbcTemplate.query(GET_REVIEW_BY_ID, reviewMapper, reviewId);
+        if (review.isEmpty()) {
             throw new NotFoundException("Отзыв не найден в базе данных");
         }
+        return review.getFirst();
     }
 
     @Override

@@ -7,7 +7,9 @@ import ru.yandex.practicum.filmorate.dal.review.reviewMarks.ReviewMarksStorage;
 import ru.yandex.practicum.filmorate.dal.review.reviewStorage.ReviewStorage;
 import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
@@ -59,10 +61,12 @@ public class ReviewService {
     }
 
     private void checkUserFilmId(Review review) {
-        if (userStorage.getUserById(review.getUserId()) == null) {
+        User user = userStorage.getUserById(review.getUserId());
+        Film film = filmStorage.getFilmById(review.getFilmId());
+        if (user == null) {
             throw new NotFoundException("Пользователь не найден в базе данных");
         }
-        if (filmStorage.getFilmById(review.getFilmId()) == null) {
+        if (film == null) {
             throw new NotFoundException("Фильм не найден в базе данных");
         }
     }
