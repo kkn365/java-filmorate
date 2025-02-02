@@ -9,7 +9,6 @@ import java.util.List;
 
 @Component
 public interface GenreStorage {
-
     Genre getGenreById(int id);
 
     Collection<Genre> getAllGenres();

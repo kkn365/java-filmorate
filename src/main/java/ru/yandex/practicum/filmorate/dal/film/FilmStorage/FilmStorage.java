@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.Like;
 import java.util.Collection;
 
 public interface FilmStorage {
-
     Film addNewFilm(Film film);
 
     Film updateCurrentFilm(Film film);
