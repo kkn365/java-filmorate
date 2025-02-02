@@ -11,9 +11,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -23,6 +21,15 @@ public class UserService {
 
     private final UserStorage userStorage;
 
+    public UserDto getUserById(Long userId) {
+        final User user = userStorage.getUserById(userId);
+        if (user == null) {
+            log.warn("Не найден пользователь с id={}", userId);
+            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
+        }
+        return UserMapper.mapToUserDto(user);
+    }
+
     public Collection<UserDto> getAllUsers() {
         return userStorage.getAllUsers()
                 .stream()
@@ -31,127 +38,85 @@ public class UserService {
     }
 
     public UserDto addNewUser(UserDto user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         User newUser = userStorage.addNewUser(UserMapper.mapToUser(user));
+        log.info("Добавлен новый пользователь: {}", newUser);
         return UserMapper.mapToUserDto(newUser);
     }
 
     public UserDto updateUserData(UserDto user) {
-
-        final User userForUpdate = UserMapper.mapToUser(user);
         final Long id = user.getId();
-
-        if (id == null) {
-            log.warn("Не указан id в теле запроса: {}", user);
-            throw new ValidationException("Должен быть указан id пользователя.");
-        }
-
-        if (userStorage.getUserById(id) == null) {
-            log.warn("Не найден пользователь с id={}", id);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", id));
-        }
-
-        User updatedUser = userStorage.updateCurrentUser(userForUpdate);
-
-        return UserMapper.mapToUserDto(updatedUser);
+        getUserById(id);
+        userStorage.updateCurrentUser(UserMapper.mapToUser(user));
+        UserDto updatedUser = getUserById(id);
+        log.info("Обновлены данные пользователя: {}", updatedUser);
+        return updatedUser;
     }
 
-    public Collection<UserDto> addFriend(Long userId, Long friendId) {
-        final List<User> friends = new ArrayList<>();
-        final User user = userStorage.getUserById(userId);
-
-        if (user == null) {
-            log.warn("Не найден пользователь с id={}", userId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
+    public String addFriend(Long userId, Long friendId) {
+        getUserById(userId);
+        getUserById(friendId);
+        final Long friendshipId = userStorage.getFriendShipId(userId, friendId);
+        if (friendshipId == null) {
+            userStorage.addFriend(userId, friendId);
+        } else {
+            final String message = String.format("Пользователь с id=%d уже является другом пользователя с id=%d.",
+                    userId, friendId);
+            log.warn(message);
+            throw new ValidationException(message);
         }
-
-        final User friend = userStorage.getUserById(friendId);
-        if (friend == null) {
-            log.warn("Не найден пользователь с id={}", friendId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", friendId));
-        }
-
-        userStorage.addFriend(userId, friendId);
-        friends.add(user);
-        friends.add(friend);
-
-        return friends.stream()
-                .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());
+        final String message = String.format("Добавлена дружба пользователя id=%d с пользователем id=%d.",
+                userId, friendId);
+        log.info(message);
+        return message;
     }
 
-    public Collection<UserDto> deleteFriend(Long userId, Long friendId) {
-        final List<User> friends = new ArrayList<>();
-
-        final User user = userStorage.getUserById(userId);
-        if (user == null) {
-            log.warn("Не найден пользователь с id={}", userId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
-        }
-
-        final User friend = userStorage.getUserById(friendId);
-        if (friend == null) {
-            log.warn("Не найден пользователь с id={}", friendId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", friendId));
-        }
+    public String deleteFriend(Long userId, Long friendId) {
+        getUserById(userId);
+        getUserById(friendId);
+/*
+        Тесты "Not friend remove" и "Friend reciprocity" ждут код 200 даже если пользователи не друзья.
+        Оставим это пока здесь, на случай если тесты поменяют
 
         final Long friendshipId = userStorage.getFriendShipId(userId, friendId);
         if (friendshipId == null) {
-            log.warn("Пользователь с id={} не является другом пользователя с id={}.", friendId, userId);
+            final String message = String.format("Пользователь с id=%d не является другом пользователя с id=%d.",
+                    userId, friendId);
+            log.warn(message);
+            throw new NotFoundException(message);
         } else {
             userStorage.deleteFriend(userId, friendId);
-            friends.add(user);
-            friends.add(friend);
         }
-
-        return friends.stream()
-                .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());
+*/
+        userStorage.deleteFriend(userId, friendId);
+        final String message = String.format("Удалена дружба пользователя id=%d с пользователем id=%d.",
+                userId, friendId);
+        log.info(message);
+        return message;
     }
 
     public Collection<UserDto> getFriends(Long userId) {
-        final User user = userStorage.getUserById(userId);
-
-        if (user == null) {
-            log.warn("Не найден пользователь с id={}", userId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
-        }
-
+        getUserById(userId);
         return userStorage.getFriends(userId).stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
     public Collection<UserDto> getCommonFriends(Long id, Long otherId) {
-        final User user = userStorage.getUserById(id);
-        final User otherUser = userStorage.getUserById(otherId);
-
-        if (user == null) {
-            log.warn("Не найден пользователь с id={}", id);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", id));
-        }
-
-        if (otherUser == null) {
-            log.warn("Не найден пользователь с id={}", otherId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", otherId));
-        }
-
+        getUserById(id);
+        getUserById(otherId);
         return userStorage.getCommonFriends(id, otherId).stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
-    public UserDto getUserById(Long userId) {
-        final User user = userStorage.getUserById(userId);
-
-        if (user == null) {
-            log.warn("Не найден пользователь с id={}", userId);
-            throw new NotFoundException(String.format("Пользователь с id=%d не найден.", userId));
-        }
-
-        return UserMapper.mapToUserDto(user);
-    }
-
-    public void deleteUserById(Long userId) {
+    public String deleteUserById(Long userId) {
+        getUserById(userId);
         userStorage.deleteUserById(userId);
+        final String message = String.format("Удалён пользователь с id=%d.", userId);
+        log.info(message);
+        return message;
     }
 }

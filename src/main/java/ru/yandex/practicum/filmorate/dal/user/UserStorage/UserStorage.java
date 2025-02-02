@@ -7,7 +7,6 @@ import java.util.Collection;
 
 @Component
 public interface UserStorage {
-
     User addNewUser(User user);
 
     User updateCurrentUser(User user);
@@ -27,5 +26,4 @@ public interface UserStorage {
     Long getFriendShipId(Long userId, Long friendId);
 
     void deleteUserById(Long userId);
-
 }
