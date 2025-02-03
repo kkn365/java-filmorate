@@ -53,6 +53,7 @@ public class ReviewDbStorage implements ReviewStorage {
     private static final String GET_ALL_REVIEWS = """
             SELECT *
             FROM reviews
+            ORDER BY USEFUL DESC
             LIMIT ?
             """;
 
