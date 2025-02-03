@@ -47,7 +47,7 @@ public class ReviewDbStorage implements ReviewStorage {
             SELECT *
             FROM reviews
             WHERE film_id = ?
-            ORDER BY USEFUL
+            ORDER BY USEFUL DESC
             LIMIT ?
             """;
     private static final String GET_ALL_REVIEWS = """
@@ -100,9 +100,10 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getReviewsByFilm(Long filmId, Integer count) {
-        if (filmId == -1) {
+        if (filmId == 0) {
             return jdbcTemplate.query(GET_ALL_REVIEWS, reviewMapper, count);
         }
+
         return jdbcTemplate.query(GET_REVIEW_BY_FILM, reviewMapper, filmId, count);
     }
 }
