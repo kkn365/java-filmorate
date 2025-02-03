@@ -47,6 +47,7 @@ public class ReviewDbStorage implements ReviewStorage {
             SELECT *
             FROM reviews
             WHERE film_id = ?
+            ORDER BY USEFUL
             LIMIT ?
             """;
     private static final String GET_ALL_REVIEWS = """
