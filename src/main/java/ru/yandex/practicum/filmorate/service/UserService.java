@@ -4,14 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.event.eventStorage.EventStorage;
 import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
+import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,6 +25,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
     public UserDto getUserById(Long userId) {
         final User user = userStorage.getUserById(userId);
@@ -69,6 +75,9 @@ public class UserService {
         }
         final String message = String.format("Добавлена дружба пользователя id=%d с пользователем id=%d.",
                 userId, friendId);
+
+        eventStorage.save(userId, friendId, EventType.FRIEND, Operation.ADD);
+
         log.info(message);
         return message;
     }
@@ -90,6 +99,8 @@ public class UserService {
             userStorage.deleteFriend(userId, friendId);
         }
 */
+        eventStorage.save(userId, friendId, EventType.FRIEND, Operation.REMOVE);
+
         userStorage.deleteFriend(userId, friendId);
         final String message = String.format("Удалена дружба пользователя id=%d с пользователем id=%d.",
                 userId, friendId);
@@ -118,5 +129,16 @@ public class UserService {
         final String message = String.format("Удалён пользователь с id=%d.", userId);
         log.info(message);
         return message;
+    }
+
+    public List<Event> getEvents(Long userId) {
+        getUserById(userId);
+
+        List<Event> events = eventStorage.getEvent(userId);
+        if (events.isEmpty()) {
+            throw new NotFoundException("Этот пользователь еще не совершил никаких действий");
+        }
+
+        return events;
     }
 }

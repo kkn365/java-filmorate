@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmLikeRowMapper;
 import ru.yandex.practicum.filmorate.dal.film.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
 
@@ -39,11 +40,9 @@ public class InDataBaseFilmStorage implements FilmStorage {
             SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
             WHERE film_id = ?
             """;
-    private static final String GET_FILM_BY_ID = """
-            SELECT film_id, name, description, release_date, duration, mpa_id, liked
-            FROM films
-            WHERE film_id = ?
-            """;
+    private static final String GET_FILM_BY_ID = "SELECT * " +
+            "FROM films " +
+            "WHERE film_id = ?";
     private static final String GET_ALL_FILMS = """
             SELECT film_id, name, description, release_date, duration, mpa_id, liked
             FROM films
@@ -138,12 +137,12 @@ public class InDataBaseFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilmById(Long id) {
-        try {
-            return jdbcOperations.queryForObject(GET_FILM_BY_ID, filmRowMapper, id);
-        } catch (EmptyResultDataAccessException ignored) {
-            log.warn("Не найден фильм с id={}", id);
-            return null;
+        List<Film> films = jdbcOperations.query(GET_FILM_BY_ID, new FilmRowMapper(), id);
+
+        if (films.isEmpty()) {
+            throw new NotFoundException("Фильм с ID " + id + "ненайден");
         }
+        return films.getFirst();
     }
 
     @Override
