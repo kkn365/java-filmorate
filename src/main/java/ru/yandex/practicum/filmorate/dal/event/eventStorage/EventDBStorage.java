@@ -33,10 +33,6 @@ public class EventDBStorage implements EventStorage {
         });
     }
 
-    @Override
-    public void saveForReview(Long userId, Long entityId, EventType eventType, Operation operation) {
-
-    }
 
     @Override
     public List<Event> getEvent(Long userid) {
