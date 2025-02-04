@@ -20,6 +20,7 @@ public class EventDBStorage implements EventStorage {
     private static final String SAVE_EVENT = "INSERT INTO events (user_id, entity_id, event_type, operation, event_timestamp)" +
             "VALUES (?, ?, ?, ?, ?)";
 
+
     @Override
     public void save(Long userId, Long entityId, EventType eventType, Operation operation) {
 
@@ -32,8 +33,10 @@ public class EventDBStorage implements EventStorage {
             ps.setLong(5, System.currentTimeMillis());
             return ps;
         });
+
         log.info("Добавлено событие: {} {} {} {}", userId, entityId, eventType, operation);
     }
+
 
     @Override
     public List<Event> getEvent(Long userId) {
