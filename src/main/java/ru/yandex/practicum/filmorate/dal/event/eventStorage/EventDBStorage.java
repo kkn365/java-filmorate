@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dal.event.eventStorage;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.event.mapper.EventRowMapper;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
 import java.sql.PreparedStatement;
 import java.util.List;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class EventDBStorage implements EventStorage {
@@ -31,6 +33,8 @@ public class EventDBStorage implements EventStorage {
             ps.setLong(5, System.currentTimeMillis());
             return ps;
         });
+
+        log.info("Добавлено событие: {} {} {} {}", userId, entityId, eventType, operation);
     }
 
 

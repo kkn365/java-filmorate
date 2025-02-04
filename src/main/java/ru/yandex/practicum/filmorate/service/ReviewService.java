@@ -40,13 +40,15 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
-        eventStorage.save(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.UPDATE);
         checkUserFilmId(review);
+        Review currentReview = getReviewById(review.getReviewId());
+        eventStorage.save(currentReview.getUserId(), currentReview.getReviewId(), EventType.REVIEW, Operation.UPDATE);
         return reviewStorage.updateReview(review);
     }
 
     public void deleteReview(Long reviewId) {
-        eventStorage.save(getReviewById(reviewId).getUserId(), reviewId, EventType.REVIEW, Operation.REMOVE);
+        Review review = getReviewById(reviewId);
+        eventStorage.save(review.getUserId(), reviewId, EventType.REVIEW, Operation.REMOVE);
         reviewStorage.deleteReview(reviewId);
     }
 
