@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventDBStorage implements EventStorage {
     private final JdbcOperations jdbcOperations;
+
     private static final String SAVE_EVENT = "INSERT INTO events (user_id, entity_id, event_type, operation, event_timestamp)" +
             "VALUES (?, ?, ?, ?, ?)";
 

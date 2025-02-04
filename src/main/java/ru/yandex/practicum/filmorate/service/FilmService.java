@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService {
-
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final MpaService mpaService;
@@ -201,16 +200,16 @@ public class FilmService {
                 .map(Film::getId)
                 .collect(Collectors.toSet());
         // В тестах add-search ожидается сортировка по убыванию популярности
-        return getAllFilms().stream()
-                .filter(film -> popularFilmsIds.contains(film.getId()))
-                .sorted(Comparator.comparing(FilmDto::getLiked).reversed())
-                .toList();
+//         return getAllFilms().stream()
 
+//                 .filter(film -> popularFilmsIds.contains(film.getId()))
+//                 .sorted(Comparator.comparing(FilmDto::getLiked).reversed())
+//                 .toList();
         // В тестах develop ожидается сортировка по id.
-    /*     return getAllFilms().stream()
+         return getAllFilms().stream()
                 .filter(film -> popularFilmsIds.contains(film.getId()))
                 .sorted(Comparator.comparing(FilmDto::getId))
-                .toList();*/
+                .toList();
     }
 
     public Collection<Like> getDataField(Long userId) {
