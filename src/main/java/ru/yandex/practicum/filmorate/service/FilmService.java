@@ -206,7 +206,7 @@ public class FilmService {
                 .toList();
 
         // В тестах develop ожидается сортировка по id.
-        /*return getAllFilms().stream()
+        /* return getAllFilms().stream()
                 .filter(film -> popularFilmsIds.contains(film.getId()))
                 .sorted(Comparator.comparing(FilmDto::getId))
                 .toList();*/
