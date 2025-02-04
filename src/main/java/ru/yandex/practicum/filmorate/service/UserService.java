@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserService {
-
     private final UserStorage userStorage;
     private final EventStorage eventStorage;
 

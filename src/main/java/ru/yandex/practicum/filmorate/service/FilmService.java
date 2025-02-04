@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService {
-
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final MpaService mpaService;

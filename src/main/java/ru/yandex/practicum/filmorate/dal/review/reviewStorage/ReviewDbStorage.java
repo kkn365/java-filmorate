@@ -24,9 +24,9 @@ import java.util.List;
 @Primary
 public class ReviewDbStorage implements ReviewStorage {
     private final EventStorage eventStorage;
-
     private final JdbcTemplate jdbcTemplate;
     private final ReviewMapper reviewMapper;
+
     private static final String INSERT_INTO_REVIEWS = """
             INSERT INTO reviews(content, is_positive, user_id, film_id)
             VALUES (?,?,?,?)

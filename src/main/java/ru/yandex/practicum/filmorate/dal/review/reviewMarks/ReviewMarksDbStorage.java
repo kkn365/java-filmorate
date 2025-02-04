@@ -11,9 +11,9 @@ import ru.yandex.practicum.filmorate.model.Review;
 @RequiredArgsConstructor
 @Repository
 public class ReviewMarksDbStorage implements ReviewMarksStorage {
-
     private final NamedParameterJdbcOperations jdbc;
     private final ReviewMapper reviewMapper;
+
     private static final String GET_REVIEW_BY_ID = """
             SELECT *
             FROM reviews

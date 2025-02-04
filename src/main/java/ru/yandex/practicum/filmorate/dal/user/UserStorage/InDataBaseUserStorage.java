@@ -24,7 +24,6 @@ import java.util.Objects;
 @Primary
 @Repository
 public class InDataBaseUserStorage implements UserStorage {
-
     private final JdbcOperations jdbcOperations;
     private final UserRowMapper userRowMapper;
 
