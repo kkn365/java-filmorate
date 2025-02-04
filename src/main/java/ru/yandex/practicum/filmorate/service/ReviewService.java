@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.event.eventStorage.EventStorage;
 import ru.yandex.practicum.filmorate.dal.film.FilmStorage.FilmStorage;
 import ru.yandex.practicum.filmorate.dal.review.reviewMarks.ReviewMarksStorage;
 import ru.yandex.practicum.filmorate.dal.review.reviewStorage.ReviewStorage;
@@ -10,6 +11,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
+import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
 
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class ReviewService {
     private final ReviewMarksStorage reviewMarksStorage;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
     public Review getReviewById(Long reviewId) {
         return reviewStorage.getReviewById(reviewId);
@@ -36,11 +40,13 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
+        eventStorage.save(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.UPDATE);
         checkUserFilmId(review);
         return reviewStorage.updateReview(review);
     }
 
     public void deleteReview(Long reviewId) {
+        eventStorage.save(getReviewById(reviewId).getUserId(), reviewId, EventType.REVIEW, Operation.REMOVE);
         reviewStorage.deleteReview(reviewId);
     }
 

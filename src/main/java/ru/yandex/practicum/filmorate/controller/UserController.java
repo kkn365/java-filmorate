@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.ResponseMessage;
 import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -76,4 +78,8 @@ public class UserController {
         return new ResponseMessage(userService.deleteUserById(userId));
     }
 
+    @GetMapping("/{userId}/feed")
+    public List<Event> getEvents(@PathVariable Long userId) {
+        return userService.getEvents(userId);
+    }
 }

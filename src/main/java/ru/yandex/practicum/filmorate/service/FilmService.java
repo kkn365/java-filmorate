@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.event.eventStorage.EventStorage;
 import ru.yandex.practicum.filmorate.dal.film.FilmStorage.FilmStorage;
 import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -17,6 +18,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
+import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -36,6 +39,7 @@ public class FilmService {
     private final MpaService mpaService;
     private final GenreService genreService;
     private final DirectorService directorService;
+    private final EventStorage eventStorage;
 
     private static final Comparator<FilmDto> comparatorByYear = Comparator.comparing(FilmDto::getReleaseDate);
     private static final Comparator<FilmDto> comparatorByLikes = Comparator.comparing(FilmDto::getLiked).reversed();
@@ -176,6 +180,7 @@ public class FilmService {
         getFilmById(filmId);
         userService.getUserById(userId);
         filmStorage.putLike(filmId, userId);
+        eventStorage.save(userId, filmId, EventType.LIKE, Operation.ADD);
         final String message = String.format("Пользователь с id=%d поставил лайк фильму с id=%d.", userId, filmId);
         log.info(message);
         return message;
@@ -185,6 +190,7 @@ public class FilmService {
         getFilmById(filmId);
         userService.getUserById(userId);
         filmStorage.deleteLike(filmId, userId);
+        eventStorage.save(userId, filmId, EventType.LIKE, Operation.REMOVE);
         final String message = String.format("Пользователь с id=%d удалил лайк фильму с id=%d.", userId, filmId);
         log.info(message);
         return message;

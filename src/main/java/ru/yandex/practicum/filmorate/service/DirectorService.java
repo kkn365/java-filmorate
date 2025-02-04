@@ -72,6 +72,10 @@ public class DirectorService {
         directorStorage.addDirectors(filmId, directorsIds);
     }
 
+    public void addDirectors(Long filmId, List<Long> director) {
+        directorStorage.addDirectors(filmId, director);
+    }
+
     public Collection<DirectorFilmsDto> getAllFilmDirectors() {
         return directorStorage.getAllFilmsDirector();
     }
