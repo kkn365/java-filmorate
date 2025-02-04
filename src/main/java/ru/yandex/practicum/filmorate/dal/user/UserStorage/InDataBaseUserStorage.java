@@ -79,8 +79,8 @@ public class InDataBaseUserStorage implements UserStorage {
             WHERE user_id = ? AND friend_id = ?
             """;
     private static final String DELETE_USER = """
-            DELETE FROM users u
-            WHERE u.user_id = ?
+            DELETE FROM users
+            WHERE user_id = ?
             """;
     private static final String DOWNGRADE_FILM_RATING = """
             UPDATE films f

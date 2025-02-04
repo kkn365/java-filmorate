@@ -125,6 +125,7 @@ public class UserService {
 
     public String deleteUserById(Long userId) {
         getUserById(userId);
+        eventStorage.deleteEvent(userId);
         userStorage.deleteUserById(userId);
         final String message = String.format("Удалён пользователь с id=%d.", userId);
         log.info(message);
@@ -132,7 +133,6 @@ public class UserService {
     }
 
     public List<Event> getEvents(Long userId) {
-        getUserById(userId);
 
         List<Event> events = eventStorage.getEvent(userId);
         if (events.isEmpty()) {
