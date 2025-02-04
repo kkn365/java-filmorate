@@ -15,12 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventDBStorage implements EventStorage {
     private final JdbcOperations jdbcOperations;
-
-    private final String SAVE_EVENT = "INSERT INTO events (user_id, entity_id, event_type, operation, event_timestamp)" +
+    private static final String SAVE_EVENT = "INSERT INTO events (user_id, entity_id, event_type, operation, event_timestamp)" +
             "VALUES (?, ?, ?, ?, ?)";
-    private final String GET_EVENTS = "SELECT * FROM events WHERE user_id = ?";
-
-
 
 
     @Override
@@ -44,6 +40,7 @@ public class EventDBStorage implements EventStorage {
 
     @Override
     public List<Event> getEvent(Long userid) {
-        return jdbcOperations.query(GET_EVENTS, new EventRowMapper(), userid).stream().toList();
+        String getEvents = "SELECT * FROM events WHERE user_id = ?";
+        return jdbcOperations.query(getEvents, new EventRowMapper(), userid).stream().toList();
     }
 }
