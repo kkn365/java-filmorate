@@ -106,9 +106,10 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public List<Review> getReviewsByFilm(Long filmId, Integer count) {
         if (filmId == 0) {
-            return jdbcTemplate.query(GET_ALL_REVIEWS, reviewMapper, count);
+            List<Review> allReviews = jdbcTemplate.query(GET_ALL_REVIEWS, reviewMapper, count);
+            return allReviews;
         }
-
-        return jdbcTemplate.query(GET_REVIEW_BY_FILM, reviewMapper, filmId, count);
+        List<Review> filmReviews = jdbcTemplate.query(GET_REVIEW_BY_FILM, reviewMapper, filmId, count);
+        return filmReviews;
     }
 }
