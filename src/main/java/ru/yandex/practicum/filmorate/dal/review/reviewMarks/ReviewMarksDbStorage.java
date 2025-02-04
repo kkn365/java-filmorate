@@ -39,6 +39,7 @@ public class ReviewMarksDbStorage implements ReviewMarksStorage {
                 FROM review_marks
                 WHERE review_id = :review_id
             )
+            WHERE review_id = :review_id
             """;
 
     @Override
