@@ -35,8 +35,15 @@ public class EventDBStorage implements EventStorage {
 
 
     @Override
-    public List<Event> getEvent(Long userid) {
-        String getEvents = "SELECT * FROM events WHERE user_id = ?";
-        return jdbcOperations.query(getEvents, new EventRowMapper(), userid).stream().toList();
+    public List<Event> getEvent(Long userId) {
+        String getEvents = "SELECT * FROM events WHERE user_id = ? ORDER BY event_id ASC, entity_id DESC";
+        return jdbcOperations.query(getEvents, new EventRowMapper(), userId).stream().toList();
     }
+
+    @Override
+    public void deleteEvent(Long userId) {
+        String delete = "DELETE FROM events WHERE user_id = ?";
+        jdbcOperations.update(delete, userId);
+    }
+
 }

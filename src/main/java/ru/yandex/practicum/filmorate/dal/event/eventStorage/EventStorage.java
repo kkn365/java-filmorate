@@ -9,4 +9,6 @@ public interface EventStorage {
     void save(Long userId, Long entityId, EventType eventType, Operation operation);
 
     List<Event> getEvent(Long userId);
+
+    void deleteEvent(Long userId);
 }
