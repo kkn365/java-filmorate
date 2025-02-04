@@ -10,5 +10,5 @@ public interface EventStorage {
 
     List<Event> getEvent(Long userId);
 
-    void deleteEvent(Long Id);
+    void deleteEvent(Long userId);
 }
