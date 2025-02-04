@@ -201,16 +201,16 @@ public class FilmService {
                 .map(Film::getId)
                 .collect(Collectors.toSet());
         // В тестах add-search ожидается сортировка по убыванию популярности
-    /*    return getAllFilms().stream()
-                .filter(film -> popularFilmsIds.contains(film.getId()))
-                .sorted(Comparator.comparing(FilmDto::getLiked).reversed())
-                .toList();*/
-
-        // В тестах develop ожидается сортировка по id.
         return getAllFilms().stream()
                 .filter(film -> popularFilmsIds.contains(film.getId()))
-                .sorted(Comparator.comparing(FilmDto::getId))
+                .sorted(Comparator.comparing(FilmDto::getLiked).reversed())
                 .toList();
+
+        // В тестах develop ожидается сортировка по id.
+    /*     return getAllFilms().stream()
+                .filter(film -> popularFilmsIds.contains(film.getId()))
+                .sorted(Comparator.comparing(FilmDto::getId))
+                .toList();*/
     }
 
     public Collection<Like> getDataField(Long userId) {
