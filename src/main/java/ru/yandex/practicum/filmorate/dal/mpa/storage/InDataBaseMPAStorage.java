@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.mpa.MPAStorage;
+package ru.yandex.practicum.filmorate.dal.mpa.storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

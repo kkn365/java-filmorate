@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.user.UserStorage;
+package ru.yandex.practicum.filmorate.dal.user.storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

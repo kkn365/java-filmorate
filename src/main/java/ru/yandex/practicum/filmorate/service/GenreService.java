@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.genre.GenreStorage.GenreStorage;
+import ru.yandex.practicum.filmorate.dal.genre.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmGenresDto;
 import ru.yandex.practicum.filmorate.dto.GenreDto;

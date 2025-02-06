@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.review.reviewStorage;
+package ru.yandex.practicum.filmorate.dal.review.storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,12 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.event.eventStorage.EventStorage;
+import ru.yandex.practicum.filmorate.dal.event.storage.EventStorage;
 import ru.yandex.practicum.filmorate.dal.review.mappers.ReviewMapper;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
+import ru.yandex.practicum.filmorate.model.assistance.EventType;
+import ru.yandex.practicum.filmorate.model.assistance.Operation;
 
 import java.sql.PreparedStatement;
 import java.util.List;

@@ -2,17 +2,17 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.event.eventStorage.EventStorage;
-import ru.yandex.practicum.filmorate.dal.film.FilmStorage.FilmStorage;
-import ru.yandex.practicum.filmorate.dal.review.reviewMarks.ReviewMarksStorage;
-import ru.yandex.practicum.filmorate.dal.review.reviewStorage.ReviewStorage;
-import ru.yandex.practicum.filmorate.dal.user.UserStorage.UserStorage;
+import ru.yandex.practicum.filmorate.dal.event.storage.EventStorage;
+import ru.yandex.practicum.filmorate.dal.film.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.dal.review.marks.ReviewMarksStorage;
+import ru.yandex.practicum.filmorate.dal.review.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.dal.user.storage.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
+import ru.yandex.practicum.filmorate.model.assistance.EventType;
+import ru.yandex.practicum.filmorate.model.assistance.Operation;
 
 import java.util.List;
 
@@ -69,10 +69,11 @@ public class ReviewService {
 
     private void checkUserFilmId(Review review) {
         User user = userStorage.getUserById(review.getUserId());
-        Film film = filmStorage.getFilmById(review.getFilmId());
         if (user == null) {
             throw new NotFoundException("Пользователь не найден в базе данных");
         }
+
+        Film film = filmStorage.getFilmById(review.getFilmId());
         if (film == null) {
             throw new NotFoundException("Фильм не найден в базе данных");
         }

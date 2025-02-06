@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.event.eventStorage.EventStorage;
-import ru.yandex.practicum.filmorate.dal.film.FilmStorage.FilmStorage;
+import ru.yandex.practicum.filmorate.dal.event.storage.EventStorage;
+import ru.yandex.practicum.filmorate.dal.film.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -18,8 +18,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.MPA;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
+import ru.yandex.practicum.filmorate.model.assistance.EventType;
+import ru.yandex.practicum.filmorate.model.assistance.Operation;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -206,7 +206,7 @@ public class FilmService {
 //                 .sorted(Comparator.comparing(FilmDto::getLiked).reversed())
 //                 .toList();
         // В тестах develop ожидается сортировка по id.
-         return getAllFilms().stream()
+        return getAllFilms().stream()
                 .filter(film -> popularFilmsIds.contains(film.getId()))
                 .sorted(Comparator.comparing(FilmDto::getId))
                 .toList();
@@ -247,7 +247,9 @@ public class FilmService {
         return getAllFilms()
                 .stream()
                 .filter(film -> {
-                    if (by.contains("title") && (pattern.matcher(film.getName()).find())) return true;
+                    if (by.contains("title") && (pattern.matcher(film.getName()).find())) {
+                        return true;
+                    }
                     if (by.contains("director")) {
                         return film.getDirectors()
                                 .stream()

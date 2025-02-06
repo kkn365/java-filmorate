@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.genre.GenreStorage;
+package ru.yandex.practicum.filmorate.dal.genre.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.FilmGenresDto;
