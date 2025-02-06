@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.review.reviewMarks;
+package ru.yandex.practicum.filmorate.dal.review.marks;
 
 import ru.yandex.practicum.filmorate.model.Review;
 

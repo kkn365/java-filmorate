@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.ResponseMessage;
 import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -44,13 +43,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public ResponseMessage addFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        return new ResponseMessage(userService.addFriend(id, friendId));
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public ResponseMessage deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        return new ResponseMessage(userService.deleteFriend(id, friendId));
+    public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -74,8 +73,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseMessage deleteUser(@PathVariable Long userId) {
-        return new ResponseMessage(userService.deleteUserById(userId));
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUserById(userId);
     }
 
     @GetMapping("/{userId}/feed")

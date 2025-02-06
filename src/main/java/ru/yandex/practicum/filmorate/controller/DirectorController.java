@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.DirectorDto;
-import ru.yandex.practicum.filmorate.model.ResponseMessage;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import java.util.Collection;
@@ -48,8 +47,8 @@ public class DirectorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseMessage deleteDirector(@PathVariable Long id) {
-        return new ResponseMessage(directorService.deleteDirector(id));
+    public void deleteDirector(@PathVariable Long id) {
+        directorService.deleteDirector(id);
     }
 
 }

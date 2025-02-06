@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
+import ru.yandex.practicum.filmorate.model.assistance.EventType;
+import ru.yandex.practicum.filmorate.model.assistance.Operation;
 
 @Data
 @Builder

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.user.UserStorage;
+package ru.yandex.practicum.filmorate.dal.user.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;

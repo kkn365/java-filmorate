@@ -1,12 +1,12 @@
-package ru.yandex.practicum.filmorate.dal.event.eventStorage;
+package ru.yandex.practicum.filmorate.dal.event.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.event.mapper.EventRowMapper;
 import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.EventType;
-import ru.yandex.practicum.filmorate.model.assistanceForEvent.Operation;
+import ru.yandex.practicum.filmorate.model.assistance.EventType;
+import ru.yandex.practicum.filmorate.model.assistance.Operation;
 
 import java.sql.PreparedStatement;
 import java.util.List;

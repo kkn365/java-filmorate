@@ -73,8 +73,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}")
-    public ResponseMessage deleteFilmById(@PathVariable Long filmId) {
-        return new ResponseMessage(filmService.deleteFilmById(filmId));
+    public void deleteFilmById(@PathVariable Long filmId) {
+        filmService.deleteFilmById(filmId);
     }
 
     @GetMapping("/search")

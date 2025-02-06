@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.director.DirectorStorage.DirectorStorage;
+import ru.yandex.practicum.filmorate.dal.director.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.DirectorFilmsDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;

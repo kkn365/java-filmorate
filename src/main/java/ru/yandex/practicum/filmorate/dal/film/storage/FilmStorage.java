@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal.film.FilmStorage;
+package ru.yandex.practicum.filmorate.dal.film.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
