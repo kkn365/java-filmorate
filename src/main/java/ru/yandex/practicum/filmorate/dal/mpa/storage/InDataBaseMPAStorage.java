@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.dal.mpa.MPAStorage;
+package ru.yandex.practicum.filmorate.dal.mpa.storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mpa.mappers.MPARowMapper;
 import ru.yandex.practicum.filmorate.model.MPA;
@@ -15,7 +15,7 @@ import java.util.Collection;
 @Slf4j
 public class InDataBaseMPAStorage implements MPAStorage {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcOperations jdbcOperations;
     private final MPARowMapper mpaRowMapper;
 
     private static final String GET_MPA_BY_ID = """
@@ -32,7 +32,7 @@ public class InDataBaseMPAStorage implements MPAStorage {
     @Override
     public MPA getMpaById(int id) {
         try {
-            return jdbcTemplate.queryForObject(GET_MPA_BY_ID, mpaRowMapper, id);
+            return jdbcOperations.queryForObject(GET_MPA_BY_ID, mpaRowMapper, id);
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Не найден MPA с id={}", id);
             return null;
@@ -41,6 +41,6 @@ public class InDataBaseMPAStorage implements MPAStorage {
 
     @Override
     public Collection<MPA> getAllMpas() {
-        return jdbcTemplate.queryForStream(GET_ALL_MPAS, mpaRowMapper).toList();
+        return jdbcOperations.queryForStream(GET_ALL_MPAS, mpaRowMapper).toList();
     }
 }
